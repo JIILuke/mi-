@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>跨境供应链控制台 V2.4 - 国际运营版</title>
+<title>跨境供应链控制台 V2.5 - 智能迭代版</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
     :root {
@@ -11,7 +11,6 @@
         --primary: #10b981;
         --primary-dark: #059669;
         --primary-light: #d1fae5;
-        /* 优化：更具流动感的渐变 */
         --primary-gradient: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
         --timeline-gradient: linear-gradient(90deg, #34d399, #3b82f6);
 
@@ -132,7 +131,6 @@
         padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb; font-size: 0.9rem;
     }
 
-    /* 新增产品按钮 */
     .btn-add-product {
         background: var(--primary-dark); color: white; border: none;
         padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;
@@ -141,7 +139,6 @@
     }
     .btn-add-product:hover { background: var(--primary); transform: translateY(-2px); }
 
-    /* 搜索按钮 */
     .btn-search {
         background: white; color: var(--primary-dark); border: 1px solid var(--primary);
         padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700;
@@ -154,7 +151,6 @@
     th { background: #f9fafb; padding: 15px; text-align: left; color: var(--text-sec); font-size: 0.8rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
     td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
 
-    /* 幽灵输入框 */
     .ghost-input {
         width: 100%; border: 1px solid transparent; background: transparent;
         padding: 4px; font-size: 0.9rem; color: var(--text-main); border-radius: 4px;
@@ -164,7 +160,6 @@
     .text-bold { font-weight: 700; color: var(--primary-dark); font-size: 1rem; }
     .text-sm { font-size: 0.8rem; color: var(--text-sec); }
 
-    /* 表格内控件 */
     .select-mini {
         padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
         font-size: 0.85rem; background: #fff; width: 100%;
@@ -176,13 +171,11 @@
     }
     .remark-area:focus { background: white; border-color: var(--primary); }
 
-    /* 颜色类 */
     .sel-ok { border-color:#10b981 !important; color:#059669 !important; background:#ecfdf5 !important; }
     .sel-warn { border-color:#f59e0b !important; color:#d97706 !important; background:#fffbeb !important; }
     .sel-muted { border-color:#cbd5e1 !important; color:#64748b !important; background:#f8fafc !important; }
     .sel-blue { border-color:#3b82f6 !important; color:#1d4ed8 !important; background:#eff6ff !important; }
 
-    /* 图片上传 */
     .img-uploader {
         width:60px; height:60px;
         border-radius:6px;
@@ -206,11 +199,9 @@
         display:flex; flex-direction:column; align-items:center; gap:4px;
     }
 
-    /* ★ 迭代1: 优化“计划与跟进”排版 (Grid布局)
-    */
     .plan-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* 双列布局 */
+        grid-template-columns: 1fr 1fr;
         gap: 10px 15px;
     }
     .plan-item { display:flex; flex-direction:column; gap:4px; }
@@ -222,15 +213,12 @@
     }
     .plan-item .mini-date:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(16,185,129,0.1); }
     
-    /* 跨两列的输入框 */
     .span-col-2 { grid-column: span 2; }
     .mini-text-full {
         width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 6px;
         font-size: 0.8rem; background: #f9fafb;
     }
 
-    /* ★ 迭代2: 新增删除按钮
-    */
     .btn-row-del {
         background: transparent; color: #ef4444; border: 1px solid #fee2e2;
         width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
@@ -262,8 +250,6 @@
     .sku-info { font-weight: bold; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
     .sku-badge { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-sec); font-weight: normal;}
     
-    /* ★ 迭代4: 待发货区域色彩点缀 (Status Badge)
-    */
     .status-wrapper { position: relative; }
     .status-select {
         appearance: none;
@@ -271,7 +257,6 @@
         font-weight: 700; font-size: 0.85rem; cursor: pointer;
         outline: none; transition: 0.2s;
     }
-    /* 状态颜色类 */
     .st-pending { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
     .st-transit { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
     .st-received { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
@@ -282,7 +267,6 @@
     .date-input { padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; width: 100%; background: #fafafa; }
     .remark-box { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; resize: vertical; min-height: 60px; font-size: 0.9rem; background: #fafafa; }
 
-    /* === 物流计划区 === */
     .logistics-panel {
         margin-top: 15px;
         background: #fbfffd;
@@ -328,8 +312,6 @@
     }
     .btn-del:hover { background: #fff1f2; }
 
-    /* ★ 迭代3: 可视化时间轴（使用渐变色）
-    */
     .timeline {
         margin-top: 12px;
         background: white;
@@ -351,7 +333,6 @@
     }
     .timeline-seg {
         position:absolute; top:0; height:100%;
-        /* 使用新的渐变色，非死板纯色 */
         background: var(--timeline-gradient);
         border-radius: 999px;
         opacity: 1;
@@ -414,6 +395,45 @@
     }
     .btn-primary:hover { filter: brightness(1.02); transform: translateY(-1px); }
     .err-tip { display:none; margin-top: 10px; color:#ef4444; font-size:0.85rem; font-weight:700; }
+
+    /* ★ 迭代：右下角提醒弹窗 */
+    .notify-dock {
+        position: fixed; bottom: 20px; right: 20px;
+        width: 300px;
+        background: white; border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        border: 1px solid var(--border);
+        z-index: 1000;
+        display: flex; flex-direction: column;
+        transition: 0.3s;
+        overflow: hidden;
+    }
+    .notify-dock.minimized {
+        height: 48px;
+        width: 180px;
+    }
+    .notify-header {
+        background: var(--primary-gradient);
+        color: white; padding: 12px 15px;
+        font-weight: 700; font-size: 0.9rem;
+        display: flex; justify-content: space-between; align-items: center;
+        cursor: pointer;
+    }
+    .notify-body {
+        max-height: 300px; overflow-y: auto;
+        padding: 0; background: #fff;
+    }
+    .notify-item {
+        padding: 12px 15px; border-bottom: 1px solid #f3f4f6;
+        display: flex; gap: 10px; align-items: flex-start;
+    }
+    .notify-item:last-child { border-bottom: none; }
+    .notify-item .icon { color: var(--primary); margin-top: 2px; }
+    .notify-item .content { display: flex; flex-direction: column; gap: 2px; }
+    .notify-item .title { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+    .notify-item .desc { font-size: 0.75rem; color: var(--text-sec); }
+    .empty-notify { padding: 20px; text-align: center; color: #9ca3af; font-size: 0.85rem; }
+
 </style>
 </head>
 
@@ -614,20 +634,7 @@
 
         <div id="view-marketing" class="view-section">
             <div class="calendar-grid" id="calendarGrid">
-                <div class="cal-month" data-month="1"><h3>1月 (Jan)</h3><ul><li>New Year Resolution</li><li>Winter Clearance</li><li>Spring Prep</li></ul></div>
-                <div class="cal-month cal-active" data-month="2"><h3>2月 (Feb) <span style="font-size:0.7rem; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">Current</span></h3><ul><li>Valentine's Day</li><li>Presidents' Day</li><li>Spring Collection</li></ul></div>
-                <div class="cal-month" data-month="3"><h3>3月 (Mar)</h3><ul><li>Women's Day</li><li>St. Patrick's Day</li><li>Easter Preparation</li></ul></div>
-                <div class="cal-month" data-month="4"><h3>4月 (Apr)</h3><ul><li>Easter / Spring Sale</li><li>Earth Day</li><li>Summer Sourcing</li></ul></div>
-                <div class="cal-month" data-month="5"><h3>5月 (May)</h3><ul><li>Mother's Day</li><li>Memorial Day</li><li>Summer Stocking</li></ul></div>
-                <div class="cal-month" data-month="6"><h3>6月 (Jun)</h3><ul><li>Father's Day</li><li>Graduation Season</li><li><strong style="color:#f59e0b">Prime Day Prep</strong></li></ul></div>
-
-                <div class="cal-month" data-month="7"><h3>7月 (Jul)</h3><ul><li><strong style="color:#f59e0b">Prime Day Event</strong></li><li>Independence Day</li><li>Back to School</li></ul></div>
-                <div class="cal-month" data-month="8"><h3>8月 (Aug)</h3><ul><li>Back to School Peak</li><li>Summer Clearance</li><li>Halloween Order</li></ul></div>
-                <div class="cal-month" data-month="9"><h3>9月 (Sep)</h3><ul><li>Labor Day</li><li>Fall Season Start</li><li>Q4 Logistics Plan</li></ul></div>
-                <div class="cal-month" data-month="10"><h3>10月 (Oct)</h3><ul><li><strong style="color:#ea580c">Halloween (31st)</strong></li><li>Thanksgiving Prep</li><li>Holiday Shipping</li></ul></div>
-                <div class="cal-month" data-month="11"><h3>11月 (Nov)</h3><ul><li><strong style="color:#ef4444">Black Friday & CM</strong></li><li>Thanksgiving</li><li>Holiday Sales</li></ul></div>
-                <div class="cal-month" data-month="12"><h3>12月 (Dec)</h3><ul><li><strong style="color:#16a34a">Christmas</strong></li><li>Boxing Day</li><li>Year End Review</li></ul></div>
-            </div>
+                </div>
         </div>
 
         <div id="view-shipments" class="view-section">
@@ -635,14 +642,29 @@
         </div>
 
         <div id="view-settings" class="view-section">
-            <div style="background:white; padding:40px; border-radius:12px; text-align:center; color:#888;">
-                <i class="fas fa-cogs" style="font-size:3rem; margin-bottom:20px; color:#ddd;"></i>
-                <p>系统设置面板正在开发中...</p>
+            <div style="background:white; padding:40px; border-radius:12px; max-width: 600px; margin: 0 auto; box-shadow: var(--shadow-card);">
+                <h3 style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-top: 0;">系统设置</h3>
+                <div class="form-item">
+                    <label>营销日历语言 / Marketing Calendar Language</label>
+                    <select class="select-mini" style="padding: 10px;" onchange="changeLang(this.value)">
+                        <option value="cn" selected>中文 (Chinese)</option>
+                        <option value="en">English (英文)</option>
+                    </select>
+                </div>
             </div>
         </div>
 
     </div>
 </main>
+
+<div id="notification-dock" class="notify-dock">
+    <div class="notify-header" onclick="toggleNotify()">
+        <span>🔔 今日提醒 (<span id="notify-count">0</span>)</span>
+        <i class="fas fa-chevron-down" id="notify-icon"></i>
+    </div>
+    <div class="notify-body" id="notify-list">
+        </div>
+</div>
 
 <div class="modal-mask" id="addProductMask">
     <div class="modal">
@@ -672,18 +694,18 @@
                     <label>营销节点</label>
                     <select id="apSolar">
                         <option value="">选择节点...</option>
-                        <option value="1">1月 (New Year)</option>
-                        <option value="2">2月 (Valentine)</option>
-                        <option value="3">3月 (Women's Day)</option>
-                        <option value="4">4月 (Easter)</option>
-                        <option value="5">5月 (Mother's Day)</option>
-                        <option value="6">6月 (Father's Day)</option>
-                        <option value="7">7月 (Prime Day)</option>
-                        <option value="8">8月 (Back to School)</option>
-                        <option value="9">9月 (Fall Season)</option>
-                        <option value="10">10月 (Halloween)</option>
-                        <option value="11">11月 (Black Friday)</option>
-                        <option value="12">12月 (Christmas)</option>
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
                     </select>
                 </div>
                 <div class="form-item" style="grid-column:1/-1;">
@@ -701,6 +723,24 @@
 </div>
 
 <script>
+    // 营销日历数据
+    const calendarData = {
+        1: { cn: ["新年目标", "冬季清仓", "春季备货"], en: ["New Year Resolution", "Winter Clearance", "Spring Prep"] },
+        2: { cn: ["情人节", "总统日", "春季新品"], en: ["Valentine's Day", "Presidents' Day", "Spring Collection"] },
+        3: { cn: ["妇女节", "圣帕特里克节", "复活节备货"], en: ["Women's Day", "St. Patrick's Day", "Easter Preparation"] },
+        4: { cn: ["复活节", "地球日", "夏季选品"], en: ["Easter / Spring Sale", "Earth Day", "Summer Sourcing"] },
+        5: { cn: ["母亲节", "阵亡将士纪念日", "夏季备货"], en: ["Mother's Day", "Memorial Day", "Summer Stocking"] },
+        6: { cn: ["父亲节", "毕业季", "Prime Day 冲刺"], en: ["Father's Day", "Graduation Season", "Prime Day Prep"] },
+        7: { cn: ["Prime Day 大促", "独立日", "返校季"], en: ["Prime Day Event", "Independence Day", "Back to School"] },
+        8: { cn: ["返校季高峰", "夏季清仓", "万圣节备货"], en: ["Back to School Peak", "Summer Clearance", "Halloween Order"] },
+        9: { cn: ["劳动节", "秋季新品", "Q4 物流计划"], en: ["Labor Day", "Fall Season Start", "Q4 Logistics Plan"] },
+        10: { cn: ["万圣节", "感恩节备货", "节日发货"], en: ["Halloween (31st)", "Thanksgiving Prep", "Holiday Shipping"] },
+        11: { cn: ["黑五网一", "感恩节", "旺季销售"], en: ["Black Friday & CM", "Thanksgiving", "Holiday Sales"] },
+        12: { cn: ["圣诞节", "节礼日", "年终复盘"], en: ["Christmas", "Boxing Day", "Year End Review"] }
+    };
+
+    let currentLang = 'cn';
+
     function switchTab(viewName, clickedNav) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
@@ -717,7 +757,7 @@
 
         const headerTitle = document.getElementById('page-header-title');
         if(viewName === 'dashboard') headerTitle.innerText = "供应链协同看板";
-        else if(viewName === 'marketing') headerTitle.innerText = "Global Marketing Calendar";
+        else if(viewName === 'marketing') headerTitle.innerText = currentLang === 'cn' ? "跨境营销日历" : "Global Marketing Calendar";
         else if(viewName === 'shipments') headerTitle.innerText = "物流发货计划";
         else if(viewName === 'settings') headerTitle.innerText = "系统设置";
     }
@@ -789,13 +829,13 @@
         });
     }
 
-    // ★ 迭代2：删除产品行逻辑
     function deleteProductRow(btn) {
         if(!confirm("确定要删除这个SKU吗？这将同步移除发货计划。")) return;
         const tr = btn.closest('tr');
         if(tr) {
             tr.remove();
-            syncShipmentsFromProducts(); // 重新同步以移除对应的卡片
+            syncShipmentsFromProducts(); 
+            checkReminders(); // 更新提醒
         }
     }
 
@@ -821,7 +861,6 @@
 
         const tr = document.createElement('tr');
         tr.setAttribute('data-row', 'product');
-        // 使用更新后的 HTML 结构（含Grid布局和Delete按钮）
         tr.innerHTML = `
             <td>
                 <div class="img-uploader" data-img-uploader>
@@ -874,19 +913,19 @@
             <td>
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <select class="select-mini solar-select">
-                        <option value="">选择营销节点...</option>
-                        <option value="1">1月 (New Year)</option>
-                        <option value="2">2月 (Valentine)</option>
-                        <option value="3">3月 (Women's Day)</option>
-                        <option value="4">4月 (Easter)</option>
-                        <option value="5">5月 (Mother's Day)</option>
-                        <option value="6">6月 (Father's Day)</option>
-                        <option value="7">7月 (Prime Day)</option>
-                        <option value="8">8月 (Back to School)</option>
-                        <option value="9">9月 (Fall Season)</option>
-                        <option value="10">10月 (Halloween)</option>
-                        <option value="11">11月 (Black Friday)</option>
-                        <option value="12">12月 (Christmas)</option>
+                        <option value="">选择节点...</option>
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
                     </select>
                     <select class="select-mini sample-select" data-color-mode="sample">
                         <option value="no" selected>✘ 未借样</option>
@@ -924,17 +963,51 @@
 
         applySkuSearch();
         syncShipmentsFromProducts(); 
+        checkReminders(); // 刷新提醒
         closeAddProduct();
     }
 
     /* =========================
-       营销日历联动
+       营销日历 & 语言切换
        ========================= */
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const currentMonthIdx = new Date().getMonth();
+
+        for(let i=1; i<=12; i++) {
+            const mData = calendarData[i];
+            const content = currentLang === 'cn' ? mData.cn : mData.en;
+            const title = currentLang === 'cn' ? `${i}月` : `${i}月 (${months[i-1]})`;
+            const isActive = (i === currentMonthIdx + 1) ? 'cal-active' : '';
+            const badge = isActive ? `<span style="font-size:0.7rem; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">Current</span>` : '';
+
+            let lis = '';
+            content.forEach(item => {
+                // 高亮关键大促
+                if(item.includes("Prime") || item.includes("Black Friday") || item.includes("Halloween") || item.includes("Christmas") || item.includes("黑五") || item.includes("万圣节") || item.includes("圣诞")) {
+                    lis += `<li><strong style="color:#ea580c">${item}</strong></li>`;
+                } else {
+                    lis += `<li>${item}</li>`;
+                }
+            });
+
+            const html = `
+                <div class="cal-month ${isActive}" data-month="${i}">
+                    <h3>${title} ${badge}</h3>
+                    <ul>${lis}</ul>
+                </div>
+            `;
+            grid.innerHTML += html;
+        }
+    }
+
     function clearCalendarHighlightKeepCurrent() {
         const months = document.querySelectorAll('#calendarGrid .cal-month');
         months.forEach(m => m.classList.remove('cal-active'));
-        const current = Array.from(document.querySelectorAll('#calendarGrid .cal-month h3'))
-            .find(h3 => h3.innerText.includes('Current'))?.closest('.cal-month');
+        const currentMonthIdx = new Date().getMonth() + 1;
+        const current = document.querySelector(`#calendarGrid .cal-month[data-month="${currentMonthIdx}"]`);
         if (current) current.classList.add('cal-active');
     }
 
@@ -966,6 +1039,14 @@
         });
     }
 
+    function changeLang(lang) {
+        currentLang = lang;
+        renderCalendar();
+    }
+
+    /* =========================
+       图片 & 颜色组件
+       ========================= */
     function bindImgUploaders(scopeEl) {
         const uploaders = scopeEl ? scopeEl.querySelectorAll('[data-img-uploader]') : document.querySelectorAll('[data-img-uploader]');
         uploaders.forEach(u => {
@@ -1014,7 +1095,7 @@
     }
 
     /* =========================
-       发货计划逻辑
+       发货计划逻辑 (含自动状态)
        ========================= */
     function addDays(dateStr, days) {
         if (!dateStr) return '';
@@ -1032,6 +1113,44 @@
         const d = new Date(dateStr + 'T00:00:00');
         if (Number.isNaN(d.getTime())) return null;
         return d;
+    }
+
+    // ★ 迭代：自动化状态判断
+    function autoUpdateShipmentStatus(card) {
+        const factoryDateStr = card.querySelector('.ship-factory')?.value;
+        const amzDateStr = card.querySelector('.ship-amzDate')?.value;
+        const fbaDateStr = card.querySelector('.fbaArrival')?.value;
+        const statusSelect = card.querySelector('.status-select');
+
+        if (!statusSelect) return;
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        let newStatus = 'pending';
+
+        const dFactory = parseDate(factoryDateStr);
+        const dAmz = parseDate(amzDateStr);
+        const dFba = parseDate(fbaDateStr);
+
+        // 逻辑判断
+        if (dFba && today >= dFba) {
+            newStatus = 'received';
+        } else if (dAmz && today >= dAmz) {
+            newStatus = 'transit';
+        } else if (dFactory && today < dFactory) {
+            newStatus = 'pending';
+        } else {
+            // 中间状态（如已出厂但未给Amz发货），默认为待发货或维持原样
+            // 这里为了符合题目“抵达发货日期后才显示运输中”，我们不做额外操作，保持pending即可
+        }
+
+        // 仅当状态改变时更新，避免干扰用户手动选择（如果需要支持手动覆盖）
+        // 题目要求自动显示，因此这里强制覆盖
+        if (statusSelect.value !== newStatus) {
+            statusSelect.value = newStatus;
+            updateStatusStyle(statusSelect);
+        }
     }
 
     function recalcLogistics(anyEl) {
@@ -1061,13 +1180,15 @@
                 const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
                 const dd = String(maxDate.getDate()).padStart(2, '0');
                 fba.value = `${yyyy}-${mm}-${dd}`;
+                // 触发同步更新状态
+                fba.dispatchEvent(new Event('input'));
             }
         });
 
         renderTimeline(card, minDate, maxDate);
+        autoUpdateShipmentStatus(card);
     }
 
-    // ★ 迭代3: 渲染带有渐变色的时间轴
     function renderTimeline(card, startD, endD) {
         const bar = card.querySelector('[data-timeline] [data-bar]');
         const rangeText = card.querySelector('.timelineRangeText');
@@ -1145,7 +1266,6 @@
         recalcLogistics(any);
     }
 
-    // ★ 迭代4: 状态颜色更新逻辑
     function updateStatusStyle(selectEl) {
         selectEl.classList.remove('st-pending', 'st-transit', 'st-received');
         const v = selectEl.value;
@@ -1284,9 +1404,10 @@
                 card.__inited = true;
                 recalcLogistics(any);
             }
+            // 每次同步也检查一次状态
+            autoUpdateShipmentStatus(card);
         });
 
-        // ★ 迭代1：确保“计划与跟进”输入框的变更实时同步
         products.forEach(p => {
             const card = container.querySelector(`.shipment-card[data-shipment="${CSS.escape(p.sku)}"]`);
             if (!card) return;
@@ -1318,7 +1439,12 @@
                 logShip.value = amzDate.value;
                 recalcLogistics(logShip);
             }
+
+            // 同步完数据后，再次触发状态检查
+            autoUpdateShipmentStatus(card);
         });
+
+        checkReminders(); // 检查弹窗提醒
     }
 
     // 绑定产品行内所有输入框变化，实时触发同步
@@ -1332,9 +1458,64 @@
         });
     }
 
+    /* =========================
+       ★ 迭代：右下角弹窗提醒逻辑
+       ========================= */
+    function toggleNotify() {
+        const dock = document.getElementById('notification-dock');
+        const icon = document.getElementById('notify-icon');
+        dock.classList.toggle('minimized');
+        if(dock.classList.contains('minimized')) {
+            icon.className = 'fas fa-chevron-up';
+        } else {
+            icon.className = 'fas fa-chevron-down';
+        }
+    }
+
+    function checkReminders() {
+        const products = getProductsSnapshot();
+        const listEl = document.getElementById('notify-list');
+        const countEl = document.getElementById('notify-count');
+        const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        let reminders = [];
+
+        products.forEach(p => {
+            const firstOrder = p.tr.querySelector('.plan-first-order')?.value;
+            const mainImg = p.tr.querySelector('.plan-img-delivery')?.value;
+            const arrival = p.tr.querySelector('.plan-arrival')?.value;
+
+            if(firstOrder === todayStr) reminders.push({sku: p.sku, title: "首批下单日", date: firstOrder});
+            if(mainImg === todayStr) reminders.push({sku: p.sku, title: "主图交付日", date: mainImg});
+            if(arrival === todayStr) reminders.push({sku: p.sku, title: "FBA到货日", date: arrival});
+        });
+
+        listEl.innerHTML = '';
+        countEl.innerText = reminders.length;
+
+        if (reminders.length === 0) {
+            listEl.innerHTML = '<div class="empty-notify">今日暂无关键节点</div>';
+            return;
+        }
+
+        reminders.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'notify-item';
+            div.innerHTML = `
+                <div class="icon"><i class="fas fa-bell"></i></div>
+                <div class="content">
+                    <span class="title">${r.title}</span>
+                    <span class="desc">${r.sku} - 今日到达节点</span>
+                </div>
+            `;
+            listEl.appendChild(div);
+        });
+    }
+
     window.onload = () => {
         updateClock();
         setInterval(updateClock, 1000);
+        
+        renderCalendar(); // 初始化日历
 
         document.getElementById('btnSkuSearch').addEventListener('click', applySkuSearch);
         document.getElementById('skuSearchInput').addEventListener('keydown', (e) => {
