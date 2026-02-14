@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>跨境供应链控制台 V2.2 - 年度全景版</title>
+<title>跨境供应链控制台 V2.3 - 灵动迭代版</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
     :root {
@@ -12,14 +12,14 @@
         --primary-dark: #059669;
         --primary-light: #d1fae5;
         --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        
+
         /* 界面灰度 */
         --bg-app: #f3f4f6;       /* 整体背景灰 */
         --bg-panel: #ffffff;     /* 卡片背景白 */
         --text-main: #111827;    /* 深黑 */
         --text-sec: #6b7280;     /* 次级灰 */
         --border: #e5e7eb;
-        
+
         /* 阴影与圆角 */
         --radius: 12px;
         --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -34,7 +34,7 @@
         color: var(--text-main);
         height: 100vh;
         display: flex;
-        overflow: hidden; 
+        overflow: hidden;
     }
 
     /* --- 1. 左侧导航 (Sidebar) --- */
@@ -57,14 +57,14 @@
     .brand i { font-size: 1.5rem; color: var(--primary); }
 
     .nav-menu { list-style: none; padding: 0; margin: 0; }
-    
+
     .nav-item {
         padding: 12px 15px; margin-bottom: 5px; border-radius: var(--radius);
         color: var(--text-sec); cursor: pointer; transition: all 0.2s;
         display: flex; align-items: center; gap: 12px; font-weight: 500;
     }
     .nav-item:hover { background: #f0fdf4; color: var(--primary-dark); }
-    
+
     .nav-item.active {
         background: var(--primary-gradient);
         color: white;
@@ -120,25 +120,99 @@
         box-shadow: var(--shadow-card); border-bottom: 3px solid transparent; transition: 0.3s;
     }
     .stat-card:hover { transform: translateY(-3px); border-bottom-color: var(--primary); }
-    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 10px; }
-    
+    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 10px; font-variant-numeric: tabular-nums;}
+
     .filter-panel {
         background: var(--bg-panel); padding: 20px; border-radius: var(--radius);
         box-shadow: var(--shadow-card); margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
     }
     .input-clean {
-        padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb;
+        padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb; font-size: 0.9rem;
     }
-    
+
+    /* 新增产品按钮 */
+    .btn-add-product {
+        background: var(--primary-dark); color: white; border: none;
+        padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;
+        display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+    }
+    .btn-add-product:hover { background: var(--primary); transform: translateY(-2px); }
+
+    /* 新增：搜索按钮 */
+    .btn-search {
+        background: white; color: var(--primary-dark); border: 1px solid var(--primary);
+        padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700;
+        display: flex; align-items: center; gap: 8px; transition: 0.2s;
+    }
+    .btn-search:hover { background: var(--primary-light); }
+
     .table-container { background: var(--bg-panel); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #f9fafb; padding: 15px; text-align: left; color: var(--text-sec); font-size: 0.8rem; border-bottom: 1px solid var(--border); }
-    td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    
-    /* === 视图2: 营销日历组件 (Grid布局 - 12个月) === */
-    .calendar-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+    th { background: #f9fafb; padding: 15px; text-align: left; color: var(--text-sec); font-size: 0.8rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+    /* 幽灵输入框样式 (无边框，悬停显示) */
+    .ghost-input {
+        width: 100%; border: 1px solid transparent; background: transparent;
+        padding: 4px; font-size: 0.9rem; color: var(--text-main); border-radius: 4px;
+        transition: 0.2s;
     }
+    .ghost-input:hover, .ghost-input:focus { background: white; border-color: #d1d5db; }
+    .text-bold { font-weight: 700; color: var(--primary-dark); font-size: 1rem; }
+    .text-sm { font-size: 0.8rem; color: var(--text-sec); }
+
+    /* 表格内控件 */
+    .select-mini {
+        padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
+        font-size: 0.85rem; background: #fff; width: 100%;
+        transition: 0.15s;
+    }
+    .remark-area {
+        width: 100%; height: 60px; border: 1px solid var(--border); border-radius: 4px;
+        padding: 5px; font-size: 0.85rem; resize: none; background: #f9fafb;
+    }
+    .remark-area:focus { background: white; border-color: var(--primary); }
+
+    /* ✅修复：借样拍摄颜色显示bug（改为动态类） */
+    .sel-ok { border-color:#10b981 !important; color:#059669 !important; background:#ecfdf5 !important; }
+    .sel-warn { border-color:#f59e0b !important; color:#d97706 !important; background:#fffbeb !important; }
+    .sel-muted { border-color:#cbd5e1 !important; color:#64748b !important; background:#f8fafc !important; }
+    .sel-blue { border-color:#3b82f6 !important; color:#1d4ed8 !important; background:#eff6ff !important; }
+
+    /* ✅修复：图片本地上传（可点击上传+预览） */
+    .img-uploader {
+        width:60px; height:60px;
+        border-radius:6px;
+        background:#f3f4f6;
+        border:1px dashed #d1d5db;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer;
+        overflow:hidden;
+        position:relative;
+        transition: 0.2s;
+    }
+    .img-uploader:hover { border-color: var(--primary); background:#f0fdf4; }
+    .img-uploader img {
+        width:100%; height:100%;
+        object-fit: cover;
+        display:none;
+    }
+    .img-uploader .hint {
+        font-size: 0.75rem;
+        color:#9ca3af;
+        display:flex; flex-direction:column; align-items:center; gap:4px;
+    }
+
+    /* 计划与跟进小块 */
+    .plan-block { display:flex; flex-direction:column; gap:8px; }
+    .plan-item { display:flex; flex-direction:column; gap:5px; }
+    .plan-item label { font-size:0.75rem; color:#6b7280; font-weight:600; }
+    .plan-item .mini-text { padding:8px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; font-size:0.9rem; }
+    .plan-item .mini-text:focus { background:#fff; border-color: var(--primary); }
+
+    /* === 视图2: 营销日历组件 === */
+    .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .cal-month {
         background: white; padding: 20px; border-radius: var(--radius);
         box-shadow: var(--shadow-card); border: 1px solid transparent; transition: 0.3s;
@@ -150,51 +224,154 @@
     .cal-month li { margin-bottom: 6px; }
     .cal-active { background: #ecfdf5; border: 1px solid var(--primary); }
 
-    /* === 视图3: 发货计划 (增强版卡片) === */
+    /* === 视图3: 发货计划 === */
     .shipment-card {
         background: white; border-radius: 12px; box-shadow: var(--shadow-card);
-        margin-bottom: 20px; padding: 20px; border: 1px solid var(--border);
-        transition: 0.2s;
+        margin-bottom: 20px; padding: 20px; border: 1px solid var(--border); transition: 0.2s;
     }
     .shipment-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-    .shipment-header {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 15px;
-    }
+    .shipment-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 15px; }
     .sku-info { font-weight: bold; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
     .sku-badge { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-sec); font-weight: normal;}
-
-    /* 状态选择器美化 */
-    .status-select {
-        padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);
-        font-weight: bold; color: var(--text-main); cursor: pointer;
-        background-color: #f9fafb;
-    }
-    .status-select:focus { border-color: var(--primary); outline: 3px solid var(--primary-light); }
-
-    /* 日期输入网格 */
-    .date-grid {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
-        margin-bottom: 15px;
-    }
+    .status-select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-weight: bold; color: var(--text-main); cursor: pointer; background-color: #f9fafb; }
+    .date-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .date-item { display: flex; flex-direction: column; gap: 5px; }
     .date-label { font-size: 0.75rem; color: var(--text-sec); font-weight: 600; }
-    .date-input {
-        padding: 8px; border: 1px solid var(--border); border-radius: 6px;
-        font-size: 0.9rem; color: var(--text-main); width: 100%; transition: 0.2s;
-    }
-    .date-input:focus { border-color: var(--primary); background: #f0fdf4; }
+    .date-input { padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; width: 100%; }
+    .remark-box { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; resize: vertical; min-height: 60px; font-size: 0.9rem; background: #fafafa; }
 
-    /* 备注框 */
-    .remark-box {
-        width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;
-        resize: vertical; min-height: 60px; font-size: 0.9rem; background: #fafafa;
+    /* === 新增：物流计划区 === */
+    .logistics-panel {
+        margin-top: 15px;
+        background: #fbfffd;
+        border: 1px solid #e7f7ef;
+        border-radius: 10px;
+        padding: 15px;
     }
-    .remark-box:focus { border-color: var(--primary); background: white; }
+    .logistics-head {
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        margin-bottom: 10px;
+    }
+    .logistics-head .title {
+        font-weight: 800; color: var(--primary-dark);
+        display:flex; align-items:center; gap:8px;
+    }
+    .btn-add-logistics {
+        background: var(--primary-gradient);
+        color:white; border:none; border-radius: 8px;
+        padding: 8px 14px; cursor:pointer; font-weight:700;
+        display:flex; align-items:center; gap:8px;
+        box-shadow: 0 4px 6px rgba(16,185,129,0.2);
+    }
+    .btn-add-logistics:hover { filter: brightness(1.02); transform: translateY(-1px); }
 
+    .log-row {
+        display:grid;
+        grid-template-columns: 1.2fr 1fr 1fr 40px;
+        gap: 10px;
+        align-items: end;
+        padding: 10px 0;
+        border-top: 1px dashed #e7f7ef;
+    }
+    .log-row:first-of-type { border-top: none; padding-top: 0; }
+    .log-row .mini-label { font-size:0.75rem; color: var(--text-sec); font-weight: 700; }
+    .log-row .mini-input {
+        padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 0.9rem;
+        width: 100%;
+    }
+    .btn-del {
+        background: white; border: 1px solid #fee2e2; color: #ef4444;
+        border-radius: 8px; cursor:pointer; height: 38px;
+        display:flex; align-items:center; justify-content:center;
+    }
+    .btn-del:hover { background: #fff1f2; }
+
+    /* 可视化时间轴 */
+    .timeline {
+        margin-top: 12px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+    }
+    .timeline-top {
+        display:flex; justify-content:space-between; align-items:center;
+        font-size:0.8rem; color: var(--text-sec);
+        margin-bottom: 10px;
+    }
+    .timeline-bar {
+        position: relative;
+        height: 10px;
+        background: #eef2f7;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .timeline-seg {
+        position:absolute; top:0; height:100%;
+        background: var(--primary-gradient);
+        border-radius: 999px;
+        opacity: 0.95;
+    }
+    .timeline-markers {
+        display:flex; justify-content:space-between;
+        margin-top: 8px;
+        font-size:0.75rem; color: var(--text-sec);
+    }
+    .tiny-note { font-size:0.8rem; color: var(--text-sec); margin-top: 8px; }
+
+    /* === 新增：弹窗（新增产品） === */
+    .modal-mask {
+        position: fixed; inset: 0; background: rgba(17,24,39,0.45);
+        display:none; align-items:center; justify-content:center; z-index: 999;
+        padding: 20px;
+    }
+    .modal {
+        width: min(560px, 100%);
+        background: white; border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+        overflow:hidden;
+    }
+    .modal-header {
+        padding: 14px 18px;
+        display:flex; align-items:center; justify-content:space-between;
+        border-bottom: 1px solid var(--border);
+        background: #fbfffd;
+    }
+    .modal-header .title { font-weight: 900; color: var(--primary-dark); display:flex; align-items:center; gap:10px; }
+    .modal-close { cursor:pointer; color: #9ca3af; padding: 6px 10px; border-radius: 8px; }
+    .modal-close:hover { background: #f3f4f6; color: #6b7280; }
+    .modal-body { padding: 18px; }
+    .form-grid {
+        display:grid; grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .form-item { display:flex; flex-direction:column; gap:6px; }
+    .form-item label { font-size:0.8rem; color: var(--text-sec); font-weight:700; }
+    .form-item input, .form-item select, .form-item textarea {
+        padding: 10px; border: 1px solid var(--border); border-radius: 10px; background:#f9fafb;
+        font-size: 0.9rem;
+    }
+    .form-item textarea { grid-column: 1 / -1; resize: vertical; min-height: 70px; }
+    .modal-footer {
+        padding: 14px 18px;
+        display:flex; justify-content:flex-end; gap: 10px;
+        border-top: 1px solid var(--border);
+        background: #fff;
+    }
+    .btn-ghost {
+        background:white; color: var(--text-sec); border:1px solid var(--border);
+        padding:10px 16px; border-radius: 10px; cursor:pointer; font-weight:700;
+    }
+    .btn-primary {
+        background: var(--primary-gradient); color:white; border:none;
+        padding:10px 18px; border-radius: 10px; cursor:pointer; font-weight:800;
+        box-shadow: 0 6px 10px rgba(16,185,129,0.18);
+    }
+    .btn-primary:hover { filter: brightness(1.02); transform: translateY(-1px); }
+    .err-tip { display:none; margin-top: 10px; color:#ef4444; font-size:0.85rem; font-weight:700; }
 </style>
 </head>
+
 <body>
 
 <aside>
@@ -253,158 +430,255 @@
             </div>
 
             <div class="filter-panel">
-                <div><label style="font-size:0.8rem; color:#666;">SKU搜索</label><br><input class="input-clean" placeholder="输入产品..."></div>
-                <div><label style="font-size:0.8rem; color:#666;">开始日期</label><br><input type="date" class="input-clean"></div>
-                <div><label style="font-size:0.8rem; color:#666;">结束日期</label><br><input type="date" class="input-clean"></div>
-                <div style="margin-left:auto;"><button style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">查询数据</button></div>
+                <div>
+                    <label style="font-size:0.8rem; color:#666;">SKU搜索</label><br>
+                    <input id="skuSearchInput" class="input-clean" placeholder="输入产品 / SKU / ID...">
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <span style="font-size:0.8rem; color:#666;">操作</span>
+                    <button id="btnSkuSearch" class="btn-search"><i class="fas fa-search"></i> 搜索</button>
+                </div>
+
+                <div style="margin-left:auto; display:flex; gap:10px;">
+                    <button id="btnReset" style="background:white; color:var(--text-sec); border:1px solid var(--border); padding:10px 20px; border-radius:8px; cursor:pointer;">重置</button>
+                    <button class="btn-add-product" id="btnOpenAddProduct">
+                        <i class="fas fa-plus"></i> 新增产品
+                    </button>
+                </div>
             </div>
 
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th width="80">图片</th>
-                            <th width="200">SKU信息</th>
-                            <th>进度节点</th>
-                            <th>供应商</th>
-                            <th>Listing状态</th>
+                            <th width="90">图片</th>
+                            <th width="180">基础信息 (SKU/ID/名称)</th>
+                            <th width="260">计划与跟进</th>
+                            <th width="180">节气 / 借样</th>
+                            <th>待跟进事项</th>
+                            <!-- ✅新增：右侧备注和供应商文本框 -->
+                            <th width="230">供应商 / 备注</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><div style="width:50px; height:50px; background:#eee; border-radius:4px;"></div></td>
-                            <td><strong>SKU-001</strong><br><span style="color:#888; font-size:0.8rem;">户外运动水壶</span></td>
+
+                    <tbody id="productTbody">
+                        <tr data-row="product">
                             <td>
-                                <div style="display:flex; align-items:center; gap:5px; font-size:0.8rem;">
-                                    <span style="color:green;">● 下单</span> 
-                                    <span style="height:1px; width:20px; background:#ddd;"></span> 
-                                    <span style="color:orange;">● 生产</span>
-                                    <span style="height:1px; width:20px; background:#ddd;"></span> 
-                                    <span style="color:#ccc;">● 发货</span>
+                                <!-- ✅修复：图片无法选择本地上传bug（点击选择图片并预览） -->
+                                <div class="img-uploader" data-img-uploader>
+                                    <img alt="preview">
+                                    <div class="hint">
+                                        <i class="fas fa-image"></i>
+                                        <span>上传</span>
+                                    </div>
+                                    <input type="file" accept="image/*" style="display:none;">
                                 </div>
                             </td>
-                            <td>义乌市某某工贸</td>
-                            <td><span style="background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:4px; font-size:0.75rem;">已上架</span></td>
+
+                            <td>
+                                <input class="ghost-input text-bold sku-field" value="SKU-2024-XP01" placeholder="SKU">
+                                <input class="ghost-input text-sm id-field" value="ID: 882910" placeholder="ID码">
+                                <input class="ghost-input name-field" value="户外防水运动背包" placeholder="产品名称">
+                            </td>
+
+                            <td>
+                                <!-- ✅新增：交货期、到货日、listing、图片交付日、首批下单日期、样品接受日 + Amazon发货文本框 -->
+                                <div class="plan-block">
+                                    <div class="plan-item">
+                                        <label>计划下单</label>
+                                        <input type="date" class="input-clean plan-order" value="2024-03-01" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>首批下单日期</label>
+                                        <input type="date" class="input-clean plan-first-order" value="2024-02-01" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>样品接受日</label>
+                                        <input type="date" class="input-clean plan-sample" value="2024-02-15" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>图片交付日</label>
+                                        <input type="date" class="input-clean plan-img-delivery" value="2024-02-20" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>交货期</label>
+                                        <input type="date" class="input-clean plan-factory" value="2024-03-10" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>到货日</label>
+                                        <input type="date" class="input-clean plan-arrival" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Listing</label>
+                                        <input class="mini-text plan-listing" placeholder="填写链接/状态（如：已上架）">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Amazon发货（文本）</label>
+                                        <input class="mini-text plan-amz-text" placeholder="如：UPS / SPD / LTL / Shipment ID">
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <select class="select-mini solar-select">
+                                        <option value="">选择节气...</option>
+                                        <option value="1">1月 (小寒/大寒)</option>
+                                        <option value="2">2月 (立春/雨水)</option>
+                                        <option value="3" selected>3月 (惊蛰/春分)</option>
+                                        <option value="4">4月 (清明/谷雨)</option>
+                                        <option value="5">5月 (立夏/小满)</option>
+                                        <option value="6">6月 (芒种/夏至)</option>
+                                        <option value="7">7月 (小暑/大暑)</option>
+                                        <option value="8">8月 (立秋/处暑)</option>
+                                        <option value="9">9月 (白露/秋分)</option>
+                                        <option value="10">10月 (寒露/霜降)</option>
+                                        <option value="11">11月 (立冬/小雪)</option>
+                                        <option value="12">12月 (大雪/冬至)</option>
+                                    </select>
+
+                                    <!-- ✅修复：借样拍摄颜色显示bug（动态） -->
+                                    <select class="select-mini sample-select" data-color-mode="sample">
+                                        <option value="yes" selected>✔ 已借样拍摄</option>
+                                        <option value="no">✘ 未借样</option>
+                                    </select>
+
+                                    <!-- ✅新增：是否上图按钮（对应颜色） -->
+                                    <select class="select-mini onimg-select" data-color-mode="onimg">
+                                        <option value="no" selected>✘ 未上图</option>
+                                        <option value="yes">✔ 已上图</option>
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td>
+                                <textarea class="remark-area" placeholder="在此输入待跟进内容...">确认五点描述翻译；检查外包装标签...</textarea>
+                            </td>
+
+                            <!-- ✅新增：右侧备注 + 供应商 -->
+                            <td>
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <input class="mini-text supplier-field" placeholder="供应商（工厂/渠道）">
+                                    <textarea class="remark-area note-field" placeholder="备注（如：账期/起订量/联系人）"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr data-row="product">
+                            <td>
+                                <div class="img-uploader" data-img-uploader>
+                                    <img alt="preview">
+                                    <div class="hint">
+                                        <i class="fas fa-image"></i>
+                                        <span>上传</span>
+                                    </div>
+                                    <input type="file" accept="image/*" style="display:none;">
+                                </div>
+                            </td>
+
+                            <td>
+                                <input class="ghost-input text-bold sku-field" value="SKU-2024-WB05" placeholder="SKU">
+                                <input class="ghost-input text-sm id-field" value="ID: 993102" placeholder="ID码">
+                                <input class="ghost-input name-field" value="战术水壶" placeholder="产品名称">
+                            </td>
+
+                            <td>
+                                <div class="plan-block">
+                                    <div class="plan-item">
+                                        <label>计划下单</label>
+                                        <input type="date" class="input-clean plan-order" value="2024-03-15" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>首批下单日期</label>
+                                        <input type="date" class="input-clean plan-first-order" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>样品接受日</label>
+                                        <input type="date" class="input-clean plan-sample" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>图片交付日</label>
+                                        <input type="date" class="input-clean plan-img-delivery" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>交货期</label>
+                                        <input type="date" class="input-clean plan-factory" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>到货日</label>
+                                        <input type="date" class="input-clean plan-arrival" value="" style="padding:6px;">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Listing</label>
+                                        <input class="mini-text plan-listing" placeholder="填写链接/状态（如：制作中）">
+                                    </div>
+                                    <div class="plan-item">
+                                        <label>Amazon发货（文本）</label>
+                                        <input class="mini-text plan-amz-text" placeholder="如：Shipment ID / 物流商">
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <select class="select-mini solar-select">
+                                        <option value="4" selected>4月 (清明/谷雨)</option>
+                                        <option value="5">5月 (立夏/小满)</option>
+                                    </select>
+
+                                    <select class="select-mini sample-select" data-color-mode="sample">
+                                        <option value="no" selected>✘ 未借样</option>
+                                        <option value="yes">✔ 已借样拍摄</option>
+                                    </select>
+
+                                    <select class="select-mini onimg-select" data-color-mode="onimg">
+                                        <option value="no" selected>✘ 未上图</option>
+                                        <option value="yes">✔ 已上图</option>
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td>
+                                <textarea class="remark-area" placeholder="在此输入待跟进内容...">等待工厂寄送产前样...</textarea>
+                            </td>
+
+                            <td>
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <input class="mini-text supplier-field" placeholder="供应商（工厂/渠道）">
+                                    <textarea class="remark-area note-field" placeholder="备注（如：包装要求/材质）"></textarea>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
+
                 </table>
             </div>
         </div>
 
         <div id="view-marketing" class="view-section">
-            <div class="calendar-grid">
-                <div class="cal-month"><h3>1月 (Jan)</h3><ul><li>夏季产品筹备</li><li>毕业季选品</li><li>棒球赛季</li></ul></div>
-                <div class="cal-month cal-active"><h3>2月 (Feb) <span style="font-size:0.7rem; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">Current</span></h3><ul><li>阵亡将士纪念日筹备</li><li>婚礼季进行中</li><li>夏季产品最后阶段</li></ul></div>
-                <div class="cal-month"><h3>3月 (Mar)</h3><ul><li>秋季返校季筹备</li><li>棒球与垒球赛季</li><li>婚礼季高峰</li></ul></div>
-                <div class="cal-month"><h3>4月 (Apr)</h3><ul><li>排球赛季</li><li>秋季返校季</li><li>复活节营销</li></ul></div>
-                <div class="cal-month"><h3>5月 (May)</h3><ul><li>秋季产品筹备</li><li>橄榄球赛季筹备</li><li>母亲节</li></ul></div>
-                <div class="cal-month"><h3>6月 (Jun)</h3><ul><li>父亲节</li><li>橄榄球赛季</li><li>婚礼季</li></ul></div>
-                
-                <div class="cal-month"><h3>7月 (Jul)</h3><ul><li><strong style="color:#f59e0b">Prime Day 大促</strong></li><li>万圣节选品启动</li><li>返校季冲刺</li></ul></div>
-                <div class="cal-month"><h3>8月 (Aug)</h3><ul><li>圣诞节选品筹备</li><li>万圣节备货下单</li><li>秋季产品发货</li></ul></div>
-                <div class="cal-month"><h3>9月 (Sep)</h3><ul><li>万圣节产品发货</li><li>感恩节/黑五备货</li><li>橄榄球赛季高峰</li></ul></div>
-                <div class="cal-month"><h3>10月 (Oct)</h3><ul><li><strong style="color:#ea580c">万圣节 (31日)</strong></li><li>圣诞节发货截止</li><li>Q4 旺季开始</li></ul></div>
-                <div class="cal-month"><h3>11月 (Nov)</h3><ul><li><strong style="color:#ef4444">黑五网一 (BFCM)</strong></li><li>感恩节</li><li>冬季清仓计划</li></ul></div>
-                <div class="cal-month"><h3>12月 (Dec)</h3><ul><li><strong style="color:#16a34a">圣诞节</strong></li><li>新年元旦筹备</li><li>春季新品开发</li></ul></div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="cal-month" data-month="1"><h3>1月 (Jan)</h3><ul><li>夏季产品筹备</li><li>毕业季选品</li><li>棒球赛季</li></ul></div>
+                <div class="cal-month cal-active" data-month="2"><h3>2月 (Feb) <span style="font-size:0.7rem; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">Current</span></h3><ul><li>阵亡将士纪念日筹备</li><li>婚礼季进行中</li><li>夏季产品最后阶段</li></ul></div>
+                <div class="cal-month" data-month="3"><h3>3月 (Mar)</h3><ul><li>秋季返校季筹备</li><li>棒球与垒球赛季</li><li>婚礼季高峰</li></ul></div>
+                <div class="cal-month" data-month="4"><h3>4月 (Apr)</h3><ul><li>排球赛季</li><li>秋季返校季</li><li>复活节营销</li></ul></div>
+                <div class="cal-month" data-month="5"><h3>5月 (May)</h3><ul><li>秋季产品筹备</li><li>橄榄球赛季筹备</li><li>母亲节</li></ul></div>
+                <div class="cal-month" data-month="6"><h3>6月 (Jun)</h3><ul><li>父亲节</li><li>橄榄球赛季</li><li>婚礼季</li></ul></div>
+
+                <div class="cal-month" data-month="7"><h3>7月 (Jul)</h3><ul><li><strong style="color:#f59e0b">Prime Day 大促</strong></li><li>万圣节选品启动</li><li>返校季冲刺</li></ul></div>
+                <div class="cal-month" data-month="8"><h3>8月 (Aug)</h3><ul><li>圣诞节选品筹备</li><li>万圣节备货下单</li><li>秋季产品发货</li></ul></div>
+                <div class="cal-month" data-month="9"><h3>9月 (Sep)</h3><ul><li>万圣节产品发货</li><li>感恩节/黑五备货</li><li>橄榄球赛季高峰</li></ul></div>
+                <div class="cal-month" data-month="10"><h3>10月 (Oct)</h3><ul><li><strong style="color:#ea580c">万圣节 (31日)</strong></li><li>圣诞节发货截止</li><li>Q4 旺季开始</li></ul></div>
+                <div class="cal-month" data-month="11"><h3>11月 (Nov)</h3><ul><li><strong style="color:#ef4444">黑五网一 (BFCM)</strong></li><li>感恩节</li><li>冬季清仓计划</li></ul></div>
+                <div class="cal-month" data-month="12"><h3>12月 (Dec)</h3><ul><li><strong style="color:#16a34a">圣诞节</strong></li><li>新年元旦筹备</li><li>春季新品开发</li></ul></div>
             </div>
         </div>
 
+        <!-- ✅发货计划：对每个SKU都进行记录登记（由工作台表格自动生成卡片） -->
         <div id="view-shipments" class="view-section">
-            <div class="shipment-card">
-                <div class="shipment-header">
-                    <div class="sku-info">
-                        SKU-2024-XP01 
-                        <span class="sku-badge">户外防水背包</span>
-                    </div>
-                    <div>
-                        <select class="status-select">
-                            <option value="pending">待发货</option>
-                            <option value="transit" selected>运输中</option>
-                            <option value="received">已签收</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="date-grid">
-                    <div class="date-item">
-                        <span class="date-label">首批下单日期</span>
-                        <input type="date" class="date-input" value="2024-02-01">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">样品接收日期</span>
-                        <input type="date" class="date-input" value="2024-02-15">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">产品主图日期</span>
-                        <input type="date" class="date-input" value="2024-02-20">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">交货期 (工厂)</span>
-                        <input type="date" class="date-input" value="2024-03-10">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">Amazon发货日期</span>
-                        <input type="date" class="date-input" value="2024-03-15">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">到货期 (FBA)</span>
-                        <input type="date" class="date-input">
-                    </div>
-                </div>
-
-                <div>
-                    <textarea class="remark-box" placeholder="在此输入发货备注 (例如: 物流单号, 货代联系方式, 特殊包装要求)..."></textarea>
-                </div>
-            </div>
-
-            <div class="shipment-card">
-                <div class="shipment-header">
-                    <div class="sku-info">
-                        SKU-2024-WB05 
-                        <span class="sku-badge">战术水壶</span>
-                    </div>
-                    <div>
-                        <select class="status-select">
-                            <option value="pending" selected>待发货</option>
-                            <option value="transit">运输中</option>
-                            <option value="received">已签收</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="date-grid">
-                    <div class="date-item">
-                        <span class="date-label">首批下单日期</span>
-                        <input type="date" class="date-input">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">样品接收日期</span>
-                        <input type="date" class="date-input">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">产品主图日期</span>
-                        <input type="date" class="date-input">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">交货期 (工厂)</span>
-                        <input type="date" class="date-input">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">Amazon发货日期</span>
-                        <input type="date" class="date-input">
-                    </div>
-                    <div class="date-item">
-                        <span class="date-label">到货期 (FBA)</span>
-                        <input type="date" class="date-input">
-                    </div>
-                </div>
-
-                <div>
-                    <textarea class="remark-box" placeholder="在此输入发货备注..."></textarea>
-                </div>
-            </div>
+            <div id="shipmentsContainer"></div>
         </div>
-        
+
         <div id="view-settings" class="view-section">
             <div style="background:white; padding:40px; border-radius:12px; text-align:center; color:#888;">
                 <i class="fas fa-cogs" style="font-size:3rem; margin-bottom:20px; color:#ddd;"></i>
@@ -415,14 +689,72 @@
     </div>
 </main>
 
+<!-- 新增：新增产品弹窗 -->
+<div class="modal-mask" id="addProductMask">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="title"><i class="fas fa-plus-circle"></i> 新增产品</div>
+            <div class="modal-close" onclick="closeAddProduct()"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-item">
+                    <label>SKU</label>
+                    <input id="apSku" placeholder="例如：SKU-2026-XX01">
+                </div>
+                <div class="form-item">
+                    <label>ID码</label>
+                    <input id="apId" placeholder="例如：882910">
+                </div>
+                <div class="form-item" style="grid-column:1/-1;">
+                    <label>产品名称</label>
+                    <input id="apName" placeholder="例如：户外防水运动背包">
+                </div>
+                <div class="form-item">
+                    <label>计划下单</label>
+                    <input id="apPlan" type="date">
+                </div>
+                <div class="form-item">
+                    <label>节气/月</label>
+                    <select id="apSolar">
+                        <option value="">选择节气...</option>
+                        <option value="1">1月 (小寒/大寒)</option>
+                        <option value="2">2月 (立春/雨水)</option>
+                        <option value="3">3月 (惊蛰/春分)</option>
+                        <option value="4">4月 (清明/谷雨)</option>
+                        <option value="5">5月 (立夏/小满)</option>
+                        <option value="6">6月 (芒种/夏至)</option>
+                        <option value="7">7月 (小暑/大暑)</option>
+                        <option value="8">8月 (立秋/处暑)</option>
+                        <option value="9">9月 (白露/秋分)</option>
+                        <option value="10">10月 (寒露/霜降)</option>
+                        <option value="11">11月 (立冬/小雪)</option>
+                        <option value="12">12月 (大雪/冬至)</option>
+                    </select>
+                </div>
+                <div class="form-item" style="grid-column:1/-1;">
+                    <label>待跟进事项</label>
+                    <textarea id="apRemark" placeholder="在此输入待跟进内容..."></textarea>
+                </div>
+            </div>
+            <div class="err-tip" id="apErr">请完善必填项：SKU、ID码、产品名称。</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="closeAddProduct()">取消</button>
+            <button class="btn-primary" onclick="submitAddProduct()">确认新增</button>
+        </div>
+    </div>
+</div>
+
 <script>
     function switchTab(viewName, clickedNav) {
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
             item.style.background = "";
-            item.style.color = ""; 
+            item.style.color = "";
         });
-        clickedNav.classList.add('active');
+        if (clickedNav) clickedNav.classList.add('active');
+
         document.querySelectorAll('.view-section').forEach(section => {
             section.classList.remove('active');
         });
@@ -438,7 +770,8 @@
 
     function updateClock() {
         const now = new Date();
-        const fmt = (tz) => now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
+        const fmt = (tz) => now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+
         document.getElementById('time-cn').innerText = fmt('Asia/Shanghai');
         document.getElementById('time-us').innerText = fmt('America/New_York');
         document.getElementById('time-uk').innerText = fmt('Europe/London');
@@ -446,9 +779,641 @@
         document.getElementById('top-date').innerText = now.toLocaleDateString('zh-CN');
     }
 
+    /* =========================
+       SKU 搜索
+       ========================= */
+    function normalizeText(s) {
+        return (s || '').toString().trim().toLowerCase();
+    }
+
+    function getRowSearchText(tr) {
+        const sku = tr.querySelector('.sku-field')?.value || '';
+        const id = tr.querySelector('.id-field')?.value || '';
+        const name = tr.querySelector('.name-field')?.value || '';
+        const supplier = tr.querySelector('.supplier-field')?.value || '';
+        return normalizeText(`${sku} ${id} ${name} ${supplier}`);
+    }
+
+    function applySkuSearch() {
+        const q = normalizeText(document.getElementById('skuSearchInput').value);
+        const rows = document.querySelectorAll('#productTbody tr[data-row="product"]');
+
+        rows.forEach(tr => {
+            if (!q) { tr.style.display = ''; return; }
+            const text = getRowSearchText(tr);
+            tr.style.display = text.includes(q) ? '' : 'none';
+        });
+    }
+
+    function resetAll() {
+        document.getElementById('skuSearchInput').value = '';
+        applySkuSearch();
+        clearCalendarHighlightKeepCurrent();
+    }
+
+    /* =========================
+       新增产品弹窗
+       ========================= */
+    function openAddProduct() {
+        document.getElementById('addProductMask').style.display = 'flex';
+        document.getElementById('apErr').style.display = 'none';
+        document.getElementById('apErr').innerText = '请完善必填项：SKU、ID码、产品名称。';
+    }
+    function closeAddProduct() {
+        document.getElementById('addProductMask').style.display = 'none';
+        document.getElementById('apErr').style.display = 'none';
+        ['apSku','apId','apName','apPlan','apSolar','apRemark'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.tagName === 'SELECT') el.value = '';
+            else el.value = '';
+        });
+    }
+
+    function escapeHtml(str) {
+        return (str || '').replace(/[&<>"']/g, function(m) {
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
+        });
+    }
+
+    function submitAddProduct() {
+        const sku = document.getElementById('apSku').value.trim();
+        const id = document.getElementById('apId').value.trim();
+        const name = document.getElementById('apName').value.trim();
+        const plan = document.getElementById('apPlan').value;
+        const solar = document.getElementById('apSolar').value;
+        const remark = document.getElementById('apRemark').value;
+
+        if (!sku || !id || !name) {
+            document.getElementById('apErr').style.display = 'block';
+            return;
+        }
+
+        const existing = Array.from(document.querySelectorAll('.sku-field')).some(inp => normalizeText(inp.value) === normalizeText(sku));
+        if (existing) {
+            document.getElementById('apErr').innerText = '新增失败：SKU 已存在，请更换 SKU。';
+            document.getElementById('apErr').style.display = 'block';
+            return;
+        }
+
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-row', 'product');
+        tr.innerHTML = `
+            <td>
+                <div class="img-uploader" data-img-uploader>
+                    <img alt="preview">
+                    <div class="hint">
+                        <i class="fas fa-image"></i>
+                        <span>上传</span>
+                    </div>
+                    <input type="file" accept="image/*" style="display:none;">
+                </div>
+            </td>
+            <td>
+                <input class="ghost-input text-bold sku-field" value="${escapeHtml(sku)}" placeholder="SKU">
+                <input class="ghost-input text-sm id-field" value="ID: ${escapeHtml(id)}" placeholder="ID码">
+                <input class="ghost-input name-field" value="${escapeHtml(name)}" placeholder="产品名称">
+            </td>
+            <td>
+                <div class="plan-block">
+                    <div class="plan-item">
+                        <label>计划下单</label>
+                        <input type="date" class="input-clean plan-order" value="${plan || ''}" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>首批下单日期</label>
+                        <input type="date" class="input-clean plan-first-order" value="" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>样品接受日</label>
+                        <input type="date" class="input-clean plan-sample" value="" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>图片交付日</label>
+                        <input type="date" class="input-clean plan-img-delivery" value="" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>交货期</label>
+                        <input type="date" class="input-clean plan-factory" value="" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>到货日</label>
+                        <input type="date" class="input-clean plan-arrival" value="" style="padding:6px;">
+                    </div>
+                    <div class="plan-item">
+                        <label>Listing</label>
+                        <input class="mini-text plan-listing" placeholder="填写链接/状态（如：制作中）">
+                    </div>
+                    <div class="plan-item">
+                        <label>Amazon发货（文本）</label>
+                        <input class="mini-text plan-amz-text" placeholder="如：Shipment ID / 物流商">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <select class="select-mini solar-select">
+                        <option value="">选择节气...</option>
+                        <option value="1">1月 (小寒/大寒)</option>
+                        <option value="2">2月 (立春/雨水)</option>
+                        <option value="3">3月 (惊蛰/春分)</option>
+                        <option value="4">4月 (清明/谷雨)</option>
+                        <option value="5">5月 (立夏/小满)</option>
+                        <option value="6">6月 (芒种/夏至)</option>
+                        <option value="7">7月 (小暑/大暑)</option>
+                        <option value="8">8月 (立秋/处暑)</option>
+                        <option value="9">9月 (白露/秋分)</option>
+                        <option value="10">10月 (寒露/霜降)</option>
+                        <option value="11">11月 (立冬/小雪)</option>
+                        <option value="12">12月 (大雪/冬至)</option>
+                    </select>
+                    <select class="select-mini sample-select" data-color-mode="sample">
+                        <option value="no" selected>✘ 未借样</option>
+                        <option value="yes">✔ 已借样拍摄</option>
+                    </select>
+                    <select class="select-mini onimg-select" data-color-mode="onimg">
+                        <option value="no" selected>✘ 未上图</option>
+                        <option value="yes">✔ 已上图</option>
+                    </select>
+                </div>
+            </td>
+            <td>
+                <textarea class="remark-area" placeholder="在此输入待跟进内容...">${escapeHtml(remark || '')}</textarea>
+            </td>
+            <td>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <input class="mini-text supplier-field" placeholder="供应商（工厂/渠道）">
+                    <textarea class="remark-area note-field" placeholder="备注（如：账期/起订量/联系人）"></textarea>
+                </div>
+            </td>
+        `;
+
+        document.getElementById('productTbody').prepend(tr);
+
+        // 设置节气默认值 + 绑定联动
+        const solarSel = tr.querySelector('.solar-select');
+        if (solarSel && solar) solarSel.value = solar;
+
+        bindSolarSelect(tr);
+        bindImgUploaders(tr);
+        bindColorSelects(tr);
+        bindProductRowChange(tr);
+
+        applySkuSearch();
+        syncShipmentsFromProducts(); // ✅新增产品后自动生成对应SKU的发货计划卡片
+        closeAddProduct();
+    }
+
+    /* =========================
+       节气 -> 营销日历联动（保持原逻辑）
+       ========================= */
+    function clearCalendarHighlightKeepCurrent() {
+        const months = document.querySelectorAll('#calendarGrid .cal-month');
+        months.forEach(m => m.classList.remove('cal-active'));
+        const current = Array.from(document.querySelectorAll('#calendarGrid .cal-month h3'))
+            .find(h3 => h3.innerText.includes('Current'))?.closest('.cal-month');
+        if (current) current.classList.add('cal-active');
+    }
+
+    function highlightMarketingMonth(monthNumber, jumpToMarketing = false) {
+        if (!monthNumber) return;
+        clearCalendarHighlightKeepCurrent();
+        const target = document.querySelector(`#calendarGrid .cal-month[data-month="${monthNumber}"]`);
+        if (target) {
+            target.classList.add('cal-active');
+            if (jumpToMarketing) {
+                const navMarketing = document.querySelector('.nav-item[onclick*="marketing"]');
+                switchTab('marketing', navMarketing);
+                setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+            }
+        }
+    }
+
+    function bindSolarSelect(scopeEl) {
+        const selects = scopeEl ? scopeEl.querySelectorAll('.solar-select') : document.querySelectorAll('.solar-select');
+        selects.forEach(sel => {
+            if (sel.__bound) return;
+            sel.__bound = true;
+
+            sel.addEventListener('change', (e) => {
+                const val = e.target.value;
+                const jump = e.shiftKey;
+                highlightMarketingMonth(val, jump);
+            });
+
+            if (sel.value) highlightMarketingMonth(sel.value, false);
+        });
+    }
+
+    /* =========================
+       ✅1) 修复：图片无法选择本地上传bug
+       ========================= */
+    function bindImgUploaders(scopeEl) {
+        const uploaders = scopeEl ? scopeEl.querySelectorAll('[data-img-uploader]') : document.querySelectorAll('[data-img-uploader]');
+        uploaders.forEach(u => {
+            if (u.__bound) return;
+            u.__bound = true;
+
+            const input = u.querySelector('input[type="file"]');
+            const img = u.querySelector('img');
+            const hint = u.querySelector('.hint');
+
+            u.addEventListener('click', () => input && input.click());
+
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    if (hint) hint.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    /* =========================
+       ✅4) 修复：借样拍摄颜色显示bug
+       ✅6) 新增：是否上图按钮（对应颜色）
+       ========================= */
+    function applySelectColor(sel) {
+        if (!sel) return;
+        sel.classList.remove('sel-ok','sel-warn','sel-muted','sel-blue');
+
+        const mode = sel.getAttribute('data-color-mode');
+        const v = sel.value;
+
+        if (mode === 'sample') {
+            // 借样：yes绿 / no橙
+            if (v === 'yes') sel.classList.add('sel-ok');
+            else sel.classList.add('sel-warn');
+        } else if (mode === 'onimg') {
+            // 上图：yes蓝 / no灰
+            if (v === 'yes') sel.classList.add('sel-blue');
+            else sel.classList.add('sel-muted');
+        }
+    }
+
+    function bindColorSelects(scopeEl) {
+        const sels = scopeEl ? scopeEl.querySelectorAll('[data-color-mode]') : document.querySelectorAll('[data-color-mode]');
+        sels.forEach(sel => {
+            if (sel.__bound) return;
+            sel.__bound = true;
+
+            sel.addEventListener('change', () => applySelectColor(sel));
+            applySelectColor(sel); // 初始化
+        });
+    }
+
+    /* =========================
+       ✅3) 发货计划：对每个SKU都记录登记 + 每个SKU都有“新增物流”
+       ========================= */
+    function addDays(dateStr, days) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr + 'T00:00:00');
+        if (Number.isNaN(d.getTime())) return '';
+        d.setDate(d.getDate() + (Number(days) || 0));
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function parseDate(dateStr) {
+        if (!dateStr) return null;
+        const d = new Date(dateStr + 'T00:00:00');
+        if (Number.isNaN(d.getTime())) return null;
+        return d;
+    }
+
+    function recalcLogistics(anyEl) {
+        const card = anyEl.closest('.shipment-card');
+        if (!card) return;
+
+        const rows = card.querySelectorAll('[data-logrow]');
+        let minDate = null;
+        let maxDate = null;
+
+        rows.forEach(r => {
+            const ship = r.querySelector('.log-ship')?.value;
+            const days = r.querySelector('.log-days')?.value;
+            const arrive = addDays(ship, days);
+            const arriveEl = r.querySelector('.log-arrive');
+            if (arriveEl) arriveEl.value = arrive;
+
+            const d1 = parseDate(ship);
+            const d2 = parseDate(arrive);
+
+            if (d1) minDate = (!minDate || d1 < minDate) ? d1 : minDate;
+            if (d2) maxDate = (!maxDate || d2 > maxDate) ? d2 : maxDate;
+
+            // 同步到货期(FBA) = 最新一段到货日期（若存在）
+            const fba = card.querySelector('.fbaArrival');
+            if (fba && maxDate) {
+                const yyyy = maxDate.getFullYear();
+                const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(maxDate.getDate()).padStart(2, '0');
+                fba.value = `${yyyy}-${mm}-${dd}`;
+            }
+        });
+
+        renderTimeline(card, minDate, maxDate);
+    }
+
+    function renderTimeline(card, startD, endD) {
+        const bar = card.querySelector('[data-timeline] [data-bar]');
+        const rangeText = card.querySelector('.timelineRangeText');
+        const startText = card.querySelector('.timelineStartText');
+        const endText = card.querySelector('.timelineEndText');
+        const hint = card.querySelector('.timelineHint');
+        if (!bar) return;
+
+        bar.innerHTML = '';
+
+        if (!startD || !endD || endD <= startD) {
+            rangeText && (rangeText.innerText = '--');
+            startText && (startText.innerText = '--');
+            endText && (endText.innerText = '--');
+            hint && (hint.innerText = '提示：若无有效日期，将不显示区间。');
+            return;
+        }
+
+        const total = (endD - startD) / (1000 * 60 * 60 * 24);
+        const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+        rangeText && (rangeText.innerText = `区间：${Math.round(total)} 天`);
+        startText && (startText.innerText = fmt(startD));
+        endText && (endText.innerText = fmt(endD));
+        hint && (hint.innerText = '提示：每段物流显示为区间条（发货→到货）。');
+
+        const rows = card.querySelectorAll('[data-logrow]');
+        rows.forEach(r => {
+            const ship = parseDate(r.querySelector('.log-ship')?.value);
+            const arrive = parseDate(r.querySelector('.log-arrive')?.value);
+            if (!ship || !arrive || arrive <= ship) return;
+
+            const left = ((ship - startD) / (1000*60*60*24)) / total * 100;
+            const width = ((arrive - ship) / (1000*60*60*24)) / total * 100;
+
+            const seg = document.createElement('div');
+            seg.className = 'timeline-seg';
+            seg.style.left = `${Math.max(0, left)}%`;
+            seg.style.width = `${Math.max(1, width)}%`;
+            bar.appendChild(seg);
+        });
+    }
+
+    function addLogisticsRow(btn) {
+        const card = btn.closest('.shipment-card');
+        const container = card.querySelector('[data-rows]');
+        if (!container) return;
+
+        const row = document.createElement('div');
+        row.className = 'log-row';
+        row.setAttribute('data-logrow', '');
+        row.innerHTML = `
+            <div class="form-item">
+                <div class="mini-label">发货日期</div>
+                <input type="date" class="mini-input log-ship" onchange="recalcLogistics(this)">
+            </div>
+            <div class="form-item">
+                <div class="mini-label">到货时效 (天)</div>
+                <input type="number" class="mini-input log-days" value="0" min="0" onchange="recalcLogistics(this)">
+            </div>
+            <div class="form-item">
+                <div class="mini-label">到货日期 (自动)</div>
+                <input type="date" class="mini-input log-arrive" readonly>
+            </div>
+            <button class="btn-del" title="删除" onclick="removeLogisticsRow(this)"><i class="fas fa-trash"></i></button>
+        `;
+        container.appendChild(row);
+        recalcLogistics(row.querySelector('.log-days'));
+    }
+
+    function removeLogisticsRow(btn) {
+        const card = btn.closest('.shipment-card');
+        btn.closest('[data-logrow]')?.remove();
+        const any = card.querySelector('.log-days') || card;
+        recalcLogistics(any);
+    }
+
+    function buildShipmentCardHTML(sku, name) {
+        // 默认把“计划与跟进”里已填写的日期同步到发货计划（可编辑）
+        return `
+        <div class="shipment-card" data-shipment="${escapeHtml(sku)}">
+            <div class="shipment-header">
+                <div class="sku-info">
+                    ${escapeHtml(sku)}
+                    <span class="sku-badge">${escapeHtml(name || '')}</span>
+                </div>
+                <div>
+                    <select class="status-select">
+                        <option value="pending">待发货</option>
+                        <option value="transit">运输中</option>
+                        <option value="received">已签收</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="date-grid">
+                <div class="date-item">
+                    <span class="date-label">首批下单日期</span>
+                    <input type="date" class="date-input ship-firstOrder">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">样品接收日期</span>
+                    <input type="date" class="date-input ship-sample">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">产品主图日期</span>
+                    <input type="date" class="date-input ship-mainImg">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">交货期 (工厂)</span>
+                    <input type="date" class="date-input ship-factory">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">Amazon发货日期</span>
+                    <input type="date" class="date-input ship-amzDate">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">到货期 (FBA)</span>
+                    <input type="date" class="date-input fbaArrival">
+                </div>
+                <div class="date-item">
+                    <span class="date-label">Amazon发货（文本）</span>
+                    <input class="date-input ship-amzText" placeholder="Shipment ID / 物流商 / 渠道">
+                </div>
+            </div>
+
+            <div class="logistics-panel">
+                <div class="logistics-head">
+                    <div class="title"><i class="fas fa-route"></i> 物流发货计划</div>
+                    <button class="btn-add-logistics" onclick="addLogisticsRow(this)"><i class="fas fa-plus"></i> 新增物流</button>
+                </div>
+
+                <div class="tiny-note">支持多段物流：填写“发货日期 + 到货时效(天)”，系统自动生成“到货日期”，并同步到可视化时间轴。</div>
+
+                <div class="logistics-rows" data-rows>
+                    <div class="log-row" data-logrow>
+                        <div class="form-item">
+                            <div class="mini-label">发货日期</div>
+                            <input type="date" class="mini-input log-ship" onchange="recalcLogistics(this)">
+                        </div>
+                        <div class="form-item">
+                            <div class="mini-label">到货时效 (天)</div>
+                            <input type="number" class="mini-input log-days" value="0" min="0" onchange="recalcLogistics(this)">
+                        </div>
+                        <div class="form-item">
+                            <div class="mini-label">到货日期 (自动)</div>
+                            <input type="date" class="mini-input log-arrive" readonly>
+                        </div>
+                        <button class="btn-del" title="删除" onclick="removeLogisticsRow(this)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+
+                <div class="timeline" data-timeline>
+                    <div class="timeline-top">
+                        <span><i class="fas fa-chart-gantt"></i> 物流可视化</span>
+                        <span class="timelineRangeText">--</span>
+                    </div>
+                    <div class="timeline-bar" data-bar></div>
+                    <div class="timeline-markers">
+                        <span class="timelineStartText">--</span>
+                        <span class="timelineEndText">--</span>
+                    </div>
+                    <div class="tiny-note timelineHint">提示：若无有效日期，将不显示区间。</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <textarea class="remark-box" placeholder="在此输入发货备注..."></textarea>
+            </div>
+        </div>
+        `;
+    }
+
+    function getProductsSnapshot() {
+        const rows = document.querySelectorAll('#productTbody tr[data-row="product"]');
+        return Array.from(rows).map(tr => {
+            const sku = tr.querySelector('.sku-field')?.value || '';
+            const name = tr.querySelector('.name-field')?.value || '';
+            return { tr, sku: sku.trim(), name: name.trim() };
+        }).filter(x => x.sku);
+    }
+
+    function syncShipmentsFromProducts() {
+        const container = document.getElementById('shipmentsContainer');
+        const products = getProductsSnapshot();
+
+        // 现有卡片SKU集合
+        const existingCards = Array.from(container.querySelectorAll('.shipment-card'));
+        const existingSkuSet = new Set(existingCards.map(c => c.getAttribute('data-shipment')));
+
+        // 新增缺失卡片
+        products.forEach(p => {
+            if (!existingSkuSet.has(p.sku)) {
+                container.insertAdjacentHTML('beforeend', buildShipmentCardHTML(p.sku, p.name));
+            } else {
+                // 同步名称（badge）
+                const card = container.querySelector(`.shipment-card[data-shipment="${CSS.escape(p.sku)}"]`);
+                const badge = card?.querySelector('.sku-badge');
+                if (badge) badge.innerText = p.name;
+            }
+        });
+
+        // 删除已不存在的SKU卡片（保持数据一致）
+        existingCards.forEach(card => {
+            const sku = card.getAttribute('data-shipment');
+            if (!products.some(p => p.sku === sku)) card.remove();
+        });
+
+        // 绑定：每张卡片初次渲染后计算时间轴
+        container.querySelectorAll('.shipment-card').forEach(card => {
+            const any = card.querySelector('.log-days');
+            if (any && !card.__inited) {
+                card.__inited = true;
+                recalcLogistics(any);
+            }
+        });
+
+        // 同步“计划与跟进”日期到发货卡（可编辑）
+        products.forEach(p => {
+            const card = container.querySelector(`.shipment-card[data-shipment="${CSS.escape(p.sku)}"]`);
+            if (!card) return;
+
+            const firstOrder = p.tr.querySelector('.plan-first-order')?.value || '';
+            const sample = p.tr.querySelector('.plan-sample')?.value || '';
+            const mainImg = p.tr.querySelector('.plan-img-delivery')?.value || '';
+            const factory = p.tr.querySelector('.plan-factory')?.value || '';
+            const arrival = p.tr.querySelector('.plan-arrival')?.value || '';
+            const amzText = p.tr.querySelector('.plan-amz-text')?.value || '';
+
+            const shipFirst = card.querySelector('.ship-firstOrder');
+            const shipSample = card.querySelector('.ship-sample');
+            const shipMain = card.querySelector('.ship-mainImg');
+            const shipFactory = card.querySelector('.ship-factory');
+            const fba = card.querySelector('.fbaArrival');
+            const shipAmzText = card.querySelector('.ship-amzText');
+
+            // 仅在卡片为空时写入（避免覆盖用户在发货计划里编辑的内容）
+            if (shipFirst && !shipFirst.value) shipFirst.value = firstOrder;
+            if (shipSample && !shipSample.value) shipSample.value = sample;
+            if (shipMain && !shipMain.value) shipMain.value = mainImg;
+            if (shipFactory && !shipFactory.value) shipFactory.value = factory;
+            if (fba && !fba.value) fba.value = arrival;
+            if (shipAmzText && !shipAmzText.value) shipAmzText.value = amzText;
+
+            // 同步默认物流第一段发货日期为“Amazon发货日期”（如果有）
+            const amzDate = card.querySelector('.ship-amzDate');
+            const logShip = card.querySelector('.log-ship');
+            if (amzDate && logShip && !logShip.value && amzDate.value) {
+                logShip.value = amzDate.value;
+                recalcLogistics(logShip);
+            }
+        });
+    }
+
+    // ✅当工作台SKU/名称变化时，同步到发货计划
+    function bindProductRowChange(scopeEl) {
+        const inputs = scopeEl.querySelectorAll('.sku-field, .name-field');
+        inputs.forEach(inp => {
+            if (inp.__boundShipSync) return;
+            inp.__boundShipSync = true;
+            inp.addEventListener('input', () => syncShipmentsFromProducts());
+        });
+    }
+
+    /* =========================
+       初始化绑定
+       ========================= */
     window.onload = () => {
-        updateClock(); 
+        updateClock();
         setInterval(updateClock, 1000);
+
+        document.getElementById('btnSkuSearch').addEventListener('click', applySkuSearch);
+        document.getElementById('skuSearchInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applySkuSearch();
+        });
+
+        document.getElementById('btnReset').addEventListener('click', resetAll);
+        document.getElementById('btnOpenAddProduct').addEventListener('click', openAddProduct);
+
+        bindSolarSelect(document);
+        bindImgUploaders(document);
+        bindColorSelects(document);
+
+        // 绑定行变更（SKU/名称同步）
+        document.querySelectorAll('#productTbody tr[data-row="product"]').forEach(tr => bindProductRowChange(tr));
+
+        // ✅首次根据工作台生成发货计划（每个SKU一张卡）
+        syncShipmentsFromProducts();
+
+        document.getElementById('addProductMask').addEventListener('click', (e) => {
+            if (e.target.id === 'addProductMask') closeAddProduct();
+        });
     };
 </script>
 
