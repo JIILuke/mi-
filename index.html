@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代电商SKU计算器</title>
+    <link href="https://fonts.googleapis.com/css2?family=inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 配色方案 */
+            --primary-color: #2563eb; /* 现代蓝 */
+            --primary-hover: #1d4ed8;
+            --accent-color: #f59e0b; /* 暖橙色用于强调/汇总 */
+            --accent-bg: #fffbeb; /* 浅橙色背景 */
+            --text-dark: #1f2937;
+            --text-medium: #4b5563;
+            --text-light: #9ca3af;
+            --bg-body: #f3f4f6; /* 整体浅灰背景 */
+            --bg-card: #ffffff; /* 卡片白色背景 */
+            
+            /* 圆角和阴影变量 */
+            --radius-lg: 16px; /* 大卡片圆角 */
+            --radius-md: 10px; /* 输入框和小区块圆角 */
+            --radius-sm: 6px;  /* 小按钮圆角 */
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 25px;
+            color: var(--text-dark);
+        }
+
+        h2, h3 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* 通用卡片样式 */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 布局容器 */
+        .container-grid {
+            display: grid;
+            grid-template-columns: 7fr 3fr; /* 左7右3 */
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1000px) {
+            .container-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- 现代输入框样式 --- */
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            box-sizing: border-box; /* 重要：防止padding撑破宽度 */
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* 针对表格内的输入框微调 */
+        td input[type="text"], td input[type="number"] {
+            text-align: center;
+            padding: 8px;
+        }
+
+        /* --- 现代按钮样式 --- */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 30px; /* 胶囊状按钮 */
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+             transform: translateY(1px);
+        }
+
+        button.delete-btn {
+            background-color: #fee2e2; /* 浅红背景 */
+            color: #ef4444; /* 红色文字 */
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: var(--radius-sm);
+            box-shadow: none;
+        }
+        button.delete-btn:hover {
+            background-color: #fecaca;
+        }
+
+        /* --- SKU 管理区域 --- */
+        .sku-manager-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .sku-inputs {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        /* --- 表格样式优化 --- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-lg); /* 表格容器圆角 */
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate; /* 使用 separate 以实现圆角 */
+            border-spacing: 0;
+            background: white;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 600;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        /* 表格行 Hover 效果 */
+        tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        /* 汇总行样式 */
+        tfoot .total-row td {
+            background-color: var(--accent-bg); /* 浅橙色背景 */
+            color: var(--accent-color);
+            font-weight: 700;
+            border-top: 2px solid var(--accent-color);
+            font-size: 1.1em;
+        }
+        
+        /* 汇总行输入框特殊处理 */
+        .total-row input {
+            background-color: transparent !important;
+            font-weight: bold;
+            border: none !important;
+            box-shadow: none !important;
+            color: var(--accent-color) !important;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        /* --- 包装计算区域优化 --- */
+        .package-calc-table th {
+            background-color: #eef2ff; /* 浅蓝表头区分 */
+            color: var(--primary-color);
+            border-bottom: 1px solid #dbeafe;
+        }
+        
+        .red-text-input {
+            color: #dc2626 !important; /* 鲜艳的红色 */
+            font-weight: 600;
+            background-color: #fef2f2 !important; /* 浅红背景强调输入 */
+        }
+        
+        .result-cell {
+            font-weight: 700;
+            color: var(--text-dark);
+            background-color: #f3f4f6;
+            border-radius: var(--radius-md);
+            padding: 8px;
+            display: inline-block;
+            min-width: 60px;
+        }
+        
+        .highlight-result {
+             color: var(--primary-color);
+             font-size: 1.1em;
+        }
+
+
+        /* --- 右侧转换器样式 --- */
+        .sidebar h3 {
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .converter-group {
+            background-color: #f9fafb;
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .converter-header {
+            font-weight: 600;
+            color: var(--text-medium);
+            margin-bottom: 10px;
+            display: block;
+            text-align: center;
+        }
+
+        .conv-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .conv-row span {
+            color: var(--text-light);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .ratio-box {
+            background-color: var(--accent-bg);
+            border-color: var(--accent-color);
+        }
+        .ratio-box .converter-header {
+            color: var(--accent-color);
+        }
+
+        /* 辅助工具类 */
+        .mt-20 { margin-top: 20px; }
+        .w-full { width: 100%; }
+
+    </style>
+</head>
+<body>
+
+    <div class="card sku-manager">
+        <div class="sku-manager-header">
+            <h3 style="margin:0; min-width: 120px;">🏷️ SKU 记忆</h3>
+            <div class="sku-inputs">
+                <input type="text" id="newSkuName" placeholder="SKU名称 (如: A001)" style="flex: 2;">
+                <input type="number" id="newSkuPrice" placeholder="单价" style="flex: 1;">
+                <input type="number" id="newSkuWeight" placeholder="单个重量" style="flex: 1;">
+            </div>
+            <button onclick="saveSKU()">保存SKU</button>
+            <span id="saveMsg" style="color: var(--accent-color); font-weight: 600; font-size: 14px;"></span>
+        </div>
+    </div>
+
+    <div class="container-grid">
+        <div class="main-content">
+            
+            <div class="card">
+                <h3>🧾 订单汇总表</h3>
+                <div class="table-container">
+                    <table id="mainTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">序号</th>
+                                <th style="text-align: left; padding-left: 20px;">名称/SKU (输入自动调用)</th>
+                                <th style="width: 100px;">单价</th>
+                                <th style="width: 100px;">数量</th>
+                                <th style="width: 110px;">重量 (单个)</th>
+                                <th style="width: 120px;">总价</th>
+                                <th style="width: 70px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="2" style="text-align: right; padding-right: 20px;">汇总统计</td>
+                                <td id="totalAvgPrice">-</td>
+                                <td><input type="text" id="totalQty" value="0" readonly></td>
+                                <td><input type="text" id="totalWeight" value="0" readonly></td>
+                                <td><input type="text" id="grandTotal" value="0.00" readonly></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <button class="mt-20 w-full" onclick="addRow()">+ 添加一行</button>
+            </div>
+
+            <div class="card">
+                <h3>📦 包装尺寸与体积重计算</h3>
+                <div class="table-container" style="box-shadow: none; border: 1px solid #e5e7eb;">
+                    <table class="package-calc-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">项目</th>
+                                <th>长 (cm)</th>
+                                <th>宽 (cm)</th>
+                                <th>高 (cm)</th>
+                                <th>总个数</th>
+                                <th>单价</th>
+                                <th>总价</th>
+                                <th>总重量</th>
+                                <th>体积重</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: left; font-weight: 600;">单个尺寸</td>
+                                <td><input type="number" id="pL" value="13" oninput="calcPackage()"></td>
+                                <td><input type="number" id="pW" value="10" oninput="calcPackage()"></td>
+                                <td><input type="number" id="pH" value="3" oninput="calcPackage()"></td>
+                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell highlight-result" id="pTotalCount">0</span></td>
+                                <td rowspan="4" style="vertical-align: middle;"><input type="number" id="pUnitPrice" placeholder="单价" oninput="calcPackage()"></td>
+                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell highlight-result" id="pTotalPrice">0.00</span></td>
+                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell" id="pRealWeight">0</span></td>
+                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell" id="pVolWeight">0</span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left; font-weight: 600; color: var(--text-medium);">叠加数量 (输入)</td>
+                                <td><input type="number" id="qL" value="2" class="red-text-input" oninput="calcPackage()"></td>
+                                <td><input type="number" id="qW" value="3" class="red-text-input" oninput="calcPackage()"></td>
+                                <td><input type="number" id="qH" value="4" class="red-text-input" oninput="calcPackage()"></td>
+                            </tr>
+                            <tr style="background-color: #f8fafc;">
+                                <td style="text-align: left; font-weight: 600;">最终包装尺寸</td>
+                                <td><span class="result-cell" id="resL">0</span></td>
+                                <td><span class="result-cell" id="resW">0</span></td>
+                                <td><span class="result-cell" id="resH">0</span></td>
+                            </tr>
+                             <tr>
+                                <td style="text-align: left; font-weight: 600; color: var(--text-medium);">单个重量 (输入)</td>
+                                <td colspan="3" style="text-align: left;"><input type="number" id="pSingleWeight" value="0.028" class="red-text-input" style="width: 100px;" oninput="calcPackage()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <h3>🛠️ 常用转换工具</h3>
+
+                <div class="converter-group">
+                    <span class="converter-header">📏 尺寸转换</span>
+                    <div class="conv-row">
+                        <input type="number" id="cmVal" oninput="convertLen('cm')" placeholder="厘米 (cm)">
+                        <span>⇋</span>
+                        <input type="number" id="inchVal" oninput="convertLen('inch')" placeholder="英寸 (inch)">
+                    </div>
+                     <div class="conv-row">
+                        <input type="number" id="ftVal" oninput="convertLen('ft')" placeholder="英尺 (ft)">
+                        <span>⇋</span>
+                        <input type="number" id="mVal" oninput="convertLen('m')" placeholder="米 (m)">
+                    </div>
+                </div>
+
+                <div class="converter-group">
+                    <span class="converter-header">⚖️ 重量转换</span>
+                    <div class="conv-row">
+                        <input type="number" id="lbVal" oninput="convertWeight('lb')" placeholder="磅 (lb)">
+                        <span>⇋</span>
+                        <input type="number" id="gVal" oninput="convertWeight('g')" placeholder="克 (g)">
+                    </div>
+                    <div class="conv-row">
+                        <input type="number" id="ozVal" oninput="convertWeight('oz')" placeholder="盎司 (oz)">
+                        <span>⇋</span>
+                        <input type="number" id="ozgVal" oninput="convertWeight('ozg')" placeholder="克 (g)">
+                    </div>
+                </div>
+
+                 <div class="converter-group">
+                    <span class="converter-header">💧 液体容量</span>
+                    <div class="conv-row">
+                        <input type="number" id="flozVal" oninput="convertLiquid('floz')" placeholder="液盎司 (fl oz)">
+                        <span>⇋</span>
+                        <input type="number" id="mlVal" oninput="convertLiquid('ml')" placeholder="毫升 (ml)">
+                    </div>
+                </div>
+
+                <div class="converter-group ratio-box">
+                    <span class="converter-header">➗ 简易除法 / 性价比</span>
+                    <div class="conv-row">
+                        <input type="number" id="calcPrice" placeholder="总价" oninput="calcRatio()" style="background: white;">
+                        <span style="color: var(--accent-color)">/</span>
+                        <input type="number" id="calcQty" placeholder="个数" oninput="calcRatio()" style="background: white;">
+                    </div>
+                    <div style="text-align: center; margin-top:10px; font-weight: bold; color: var(--accent-color);">
+                        结果(单价): <span id="calcResult" style="font-size: 1.4em;">0</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <datalist id="skuList"></datalist>
+
+    <script>
+        // --- SKU 记忆功能 ---
+        function getSavedSKUs() {
+            const stored = localStorage.getItem('mySkuData');
+            return stored ? JSON.parse(stored) : {};
+        }
+
+        function saveSKU() {
+            const name = document.getElementById('newSkuName').value.trim();
+            const price = document.getElementById('newSkuPrice').value;
+            const weight = document.getElementById('newSkuWeight').value;
+
+            if (!name) return alert('请输入SKU名称');
+
+            const skus = getSavedSKUs();
+            skus[name] = { price: price, weight: weight };
+            localStorage.setItem('mySkuData', JSON.stringify(skus));
+            
+            updateDatalist();
+            
+            const msg = document.getElementById('saveMsg');
+            msg.innerText = "✨ 已保存!";
+            setTimeout(() => msg.innerText = "", 2000);
+            
+            // 清空输入框
+            document.getElementById('newSkuName').value = '';
+            document.getElementById('newSkuPrice').value = '';
+            document.getElementById('newSkuWeight').value = '';
+        }
+
+        function updateDatalist() {
+            const skus = getSavedSKUs();
+            const datalist = document.getElementById('skuList');
+            datalist.innerHTML = '';
+            for (let name in skus) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                datalist.appendChild(opt);
+            }
+        }
+
+        // --- 主表格逻辑 ---
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const rowCount = tbody.rows.length + 1;
+            const tr = document.createElement('tr');
+            
+            tr.innerHTML = `
+                <td>${rowCount}</td>
+                <td style="text-align: left;"><input type="text" list="skuList" onchange="fillSkuData(this)" placeholder="输入或选择SKU" style="text-align: left;"></td>
+                <td><input type="number" class="price" oninput="calcMainTable()" step="0.01" placeholder="0.00"></td>
+                <td><input type="number" class="qty" oninput="calcMainTable()" placeholder="0"></td>
+                <td><input type="number" class="weight" oninput="calcMainTable()" step="0.001" placeholder="0.000"></td>
+                <td><input type="text" class="total" value="0.00" readonly style="font-weight: bold; background: #f3f4f6; border:none;"></td>
+                <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+            `;
+            tbody.appendChild(tr);
+            // 新行添加后自动聚焦到SKU输入框
+            tr.querySelector('input[list="skuList"]').focus();
+        }
+
+        function deleteRow(btn) {
+            btn.closest('tr').remove();
+            calcMainTable();
+            // 重置序号
+            const rows = document.getElementById('tableBody').rows;
+            for(let i=0; i<rows.length; i++) {
+                rows[i].cells[0].innerText = i + 1;
+            }
+        }
+
+        function fillSkuData(input) {
+            const name = input.value;
+            const skus = getSavedSKUs();
+            if (skus[name]) {
+                const row = input.closest('tr');
+                row.querySelector('.price').value = skus[name].price;
+                row.querySelector('.weight').value = skus[name].weight;
+                // 聚焦到数量输入框，方便接着输入
+                row.querySelector('.qty').focus();
+                calcMainTable();
+            }
+        }
+
+        function calcMainTable() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let sumTotal = 0;
+            let sumQty = 0;
+            let sumWeight = 0;
+
+            rows.forEach(row => {
+                const price = parseFloat(row.querySelector('.price').value) || 0;
+                const qty = parseFloat(row.querySelector('.qty').value) || 0;
+                const weight = parseFloat(row.querySelector('.weight').value) || 0;
+
+                const lineTotal = price * qty;
+                const lineWeight = weight * qty;
+
+                row.querySelector('.total').value = lineTotal.toFixed(2);
+
+                sumTotal += lineTotal;
+                sumQty += qty;
+                sumWeight += lineWeight;
+            });
+
+            document.getElementById('grandTotal').value = sumTotal.toFixed(2);
+            document.getElementById('totalQty').value = sumQty;
+            document.getElementById('totalWeight').value = sumWeight.toFixed(3);
+        }
+
+        // --- 包装计算逻辑 ---
+        function calcPackage() {
+            // 输入值
+            const L = parseFloat(document.getElementById('pL').value) || 0;
+            const W = parseFloat(document.getElementById('pW').value) || 0;
+            const H = parseFloat(document.getElementById('pH').value) || 0;
+            
+            const qL = parseFloat(document.getElementById('qL').value) || 1;
+            const qW = parseFloat(document.getElementById('qW').value) || 1;
+            const qH = parseFloat(document.getElementById('qH').value) || 1;
+
+            const singleWeight = parseFloat(document.getElementById('pSingleWeight').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('pUnitPrice').value) || 0;
+
+            // 计算结果
+            const totalCount = qL * qW * qH;
+            const packL = L * qL;
+            const packW = W * qW;
+            const packH = H * qH;
+
+            // 体积重 (默认除以5000)
+            const volWeight = (packL * packW * packH) / 5000;
+            const realWeight = totalCount * singleWeight;
+            const totalPrice = totalCount * unitPrice;
+
+            // 更新DOM
+            document.getElementById('resL').innerText = packL.toFixed(1);
+            document.getElementById('resW').innerText = packW.toFixed(1);
+            document.getElementById('resH').innerText = packH.toFixed(1);
+            
+            document.getElementById('pTotalCount').innerText = totalCount;
+            document.getElementById('pVolWeight').innerText = volWeight.toFixed(2);
+            document.getElementById('pRealWeight').innerText = realWeight.toFixed(3);
+            document.getElementById('pTotalPrice').innerText = totalPrice.toFixed(2);
+        }
+
+        // --- 转换工具逻辑 ---
+        function convertLen(type) {
+            if (type === 'cm') {
+                let v = parseFloat(document.getElementById('cmVal').value);
+                document.getElementById('inchVal').value = (v / 2.54).toFixed(3);
+            } else if (type === 'inch') {
+                let v = parseFloat(document.getElementById('inchVal').value);
+                document.getElementById('cmVal').value = (v * 2.54).toFixed(3);
+            } else if (type === 'ft') {
+                let v = parseFloat(document.getElementById('ftVal').value);
+                document.getElementById('mVal').value = (v * 0.3048).toFixed(3);
+            } else if (type === 'm') {
+                let v = parseFloat(document.getElementById('mVal').value);
+                document.getElementById('ftVal').value = (v / 0.3048).toFixed(3);
+            }
+        }
+
+        function convertWeight(type) {
+            if (type === 'lb') {
+                let v = parseFloat(document.getElementById('lbVal').value);
+                document.getElementById('gVal').value = (v * 453.592).toFixed(1);
+            } else if (type === 'g') {
+                let v = parseFloat(document.getElementById('gVal').value);
+                document.getElementById('lbVal').value = (v / 453.592).toFixed(4);
+            } else if (type === 'oz') {
+                let v = parseFloat(document.getElementById('ozVal').value);
+                document.getElementById('ozgVal').value = (v * 28.3495).toFixed(2);
+            } else if (type === 'ozg') {
+                let v = parseFloat(document.getElementById('ozgVal').value);
+                document.getElementById('ozVal').value = (v / 28.3495).toFixed(4);
+            }
+        }
+        
+        function convertLiquid(type) {
+             if (type === 'floz') {
+                let v = parseFloat(document.getElementById('flozVal').value);
+                document.getElementById('mlVal').value = (v * 29.5735).toFixed(1);
+            } else if (type === 'ml') {
+                let v = parseFloat(document.getElementById('mlVal').value);
+                document.getElementById('flozVal').value = (v / 29.5735).toFixed(3);
+            }
+        }
+
+        function calcRatio() {
+            const p = parseFloat(document.getElementById('calcPrice').value) || 0;
+            const q = parseFloat(document.getElementById('calcQty').value) || 1;
+            let res = p / q;
+            if (!isFinite(res) || isNaN(res)) res = 0;
+            document.getElementById('calcResult').innerText = res.toFixed(4);
+        }
+
+        // 初始化
+        updateDatalist();
+        for(let i=0; i<3; i++) addRow(); // 默认添加3行
+        calcPackage(); // 初始计算一次包装
+    </script>
+</body>
+</html>
