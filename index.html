@@ -1,641 +1,456 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>现代电商SKU计算器</title>
-    <link href="https://fonts.googleapis.com/css2?family=inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* 配色方案 */
-            --primary-color: #2563eb; /* 现代蓝 */
-            --primary-hover: #1d4ed8;
-            --accent-color: #f59e0b; /* 暖橙色用于强调/汇总 */
-            --accent-bg: #fffbeb; /* 浅橙色背景 */
-            --text-dark: #1f2937;
-            --text-medium: #4b5563;
-            --text-light: #9ca3af;
-            --bg-body: #f3f4f6; /* 整体浅灰背景 */
-            --bg-card: #ffffff; /* 卡片白色背景 */
-            
-            /* 圆角和阴影变量 */
-            --radius-lg: 16px; /* 大卡片圆角 */
-            --radius-md: 10px; /* 输入框和小区块圆角 */
-            --radius-sm: 6px;  /* 小按钮圆角 */
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-body);
-            margin: 0;
-            padding: 25px;
-            color: var(--text-dark);
-        }
-
-        h2, h3 {
-            color: var(--text-dark);
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        /* 通用卡片样式 */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-card);
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* 布局容器 */
-        .container-grid {
-            display: grid;
-            grid-template-columns: 7fr 3fr; /* 左7右3 */
-            gap: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 1000px) {
-            .container-grid { grid-template-columns: 1fr; }
-        }
-
-        /* --- 现代输入框样式 --- */
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e5e7eb;
-            background-color: #f9fafb;
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--text-dark);
-            transition: all 0.2s ease;
-            box-sizing: border-box; /* 重要：防止padding撑破宽度 */
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        /* 针对表格内的输入框微调 */
-        td input[type="text"], td input[type="number"] {
-            text-align: center;
-            padding: 8px;
-        }
-
-        /* --- 现代按钮样式 --- */
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 30px; /* 胶囊状按钮 */
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨境供应链控制台 V2.2 - 年度全景版</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    :root {
+        /* 品牌色：翡翠绿 */
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-light: #d1fae5;
+        --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
         
-        button:active {
-             transform: translateY(1px);
-        }
-
-        button.delete-btn {
-            background-color: #fee2e2; /* 浅红背景 */
-            color: #ef4444; /* 红色文字 */
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: var(--radius-sm);
-            box-shadow: none;
-        }
-        button.delete-btn:hover {
-            background-color: #fecaca;
-        }
-
-        /* --- SKU 管理区域 --- */
-        .sku-manager-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .sku-inputs {
-            display: flex;
-            gap: 10px;
-            flex-grow: 1;
-        }
-
-        /* --- 表格样式优化 --- */
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius-lg); /* 表格容器圆角 */
-            box-shadow: var(--shadow-sm);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate; /* 使用 separate 以实现圆角 */
-            border-spacing: 0;
-            background: white;
-        }
-
-        th {
-            background-color: #f8fafc;
-            color: var(--text-medium);
-            font-weight: 600;
-            padding: 12px;
-            text-align: center;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #f3f4f6;
-            vertical-align: middle;
-        }
-
-        /* 表格行 Hover 效果 */
-        tbody tr:hover td {
-            background-color: #f9fafb;
-        }
-
-        /* 汇总行样式 */
-        tfoot .total-row td {
-            background-color: var(--accent-bg); /* 浅橙色背景 */
-            color: var(--accent-color);
-            font-weight: 700;
-            border-top: 2px solid var(--accent-color);
-            font-size: 1.1em;
-        }
+        /* 界面灰度 */
+        --bg-app: #f3f4f6;       /* 整体背景灰 */
+        --bg-panel: #ffffff;     /* 卡片背景白 */
+        --text-main: #111827;    /* 深黑 */
+        --text-sec: #6b7280;     /* 次级灰 */
+        --border: #e5e7eb;
         
-        /* 汇总行输入框特殊处理 */
-        .total-row input {
-            background-color: transparent !important;
-            font-weight: bold;
-            border: none !important;
-            box-shadow: none !important;
-            color: var(--accent-color) !important;
-            font-size: 1.1em;
-            text-align: center;
-        }
+        /* 阴影与圆角 */
+        --radius: 12px;
+        --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
 
-        /* --- 包装计算区域优化 --- */
-        .package-calc-table th {
-            background-color: #eef2ff; /* 浅蓝表头区分 */
-            color: var(--primary-color);
-            border-bottom: 1px solid #dbeafe;
-        }
-        
-        .red-text-input {
-            color: #dc2626 !important; /* 鲜艳的红色 */
-            font-weight: 600;
-            background-color: #fef2f2 !important; /* 浅红背景强调输入 */
-        }
-        
-        .result-cell {
-            font-weight: 700;
-            color: var(--text-dark);
-            background-color: #f3f4f6;
-            border-radius: var(--radius-md);
-            padding: 8px;
-            display: inline-block;
-            min-width: 60px;
-        }
-        
-        .highlight-result {
-             color: var(--primary-color);
-             font-size: 1.1em;
-        }
+    * { box-sizing: border-box; outline: none; }
 
+    body {
+        margin: 0;
+        font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+        background-color: var(--bg-app);
+        color: var(--text-main);
+        height: 100vh;
+        display: flex;
+        overflow: hidden; 
+    }
 
-        /* --- 右侧转换器样式 --- */
-        .sidebar h3 {
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f3f4f6;
-        }
+    /* --- 1. 左侧导航 (Sidebar) --- */
+    aside {
+        width: 240px;
+        background: var(--bg-panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        z-index: 10;
+        flex-shrink: 0;
+    }
 
-        .converter-group {
-            background-color: #f9fafb;
-            border-radius: var(--radius-md);
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .converter-header {
-            font-weight: 600;
-            color: var(--text-medium);
-            margin-bottom: 10px;
-            display: block;
-            text-align: center;
-        }
+    .brand {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 1.2rem; font-weight: 800; color: var(--primary-dark);
+        margin-bottom: 40px; padding-left: 10px;
+    }
+    .brand i { font-size: 1.5rem; color: var(--primary); }
 
-        .conv-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
+    .nav-menu { list-style: none; padding: 0; margin: 0; }
+    
+    .nav-item {
+        padding: 12px 15px; margin-bottom: 5px; border-radius: var(--radius);
+        color: var(--text-sec); cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center; gap: 12px; font-weight: 500;
+    }
+    .nav-item:hover { background: #f0fdf4; color: var(--primary-dark); }
+    
+    .nav-item.active {
+        background: var(--primary-gradient);
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+    }
 
-        .conv-row span {
-            color: var(--text-light);
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .ratio-box {
-            background-color: var(--accent-bg);
-            border-color: var(--accent-color);
-        }
-        .ratio-box .converter-header {
-            color: var(--accent-color);
-        }
+    /* --- 2. 主内容区 (Main) --- */
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 0;
+        position: relative;
+    }
 
-        /* 辅助工具类 */
-        .mt-20 { margin-top: 20px; }
-        .w-full { width: 100%; }
+    header {
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border);
+        padding: 15px 30px;
+        display: flex; justify-content: space-between; align-items: center;
+        position: sticky; top: 0; z-index: 5;
+    }
 
-    </style>
+    .page-title h2 { margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 10px;}
+    .page-title p { margin: 2px 0 0 0; color: var(--text-sec); font-size: 0.85rem; }
+
+    .hero-date-btn {
+        background: white; border: 1px solid var(--primary); color: var(--primary);
+        padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;
+        transition: 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .hero-date-btn:hover { background: var(--primary-light); }
+
+    .content-wrapper { padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+    .view-section { display: none; animation: fadeIn 0.4s ease; }
+    .view-section.active { display: block; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === 视图1: 工作台组件 === */
+    .stats-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px; margin-bottom: 30px;
+    }
+    .stat-card {
+        background: var(--bg-panel); padding: 20px; border-radius: var(--radius);
+        box-shadow: var(--shadow-card); border-bottom: 3px solid transparent; transition: 0.3s;
+    }
+    .stat-card:hover { transform: translateY(-3px); border-bottom-color: var(--primary); }
+    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 10px; }
+    
+    .filter-panel {
+        background: var(--bg-panel); padding: 20px; border-radius: var(--radius);
+        box-shadow: var(--shadow-card); margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
+    }
+    .input-clean {
+        padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #f9fafb;
+    }
+    
+    .table-container { background: var(--bg-panel); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f9fafb; padding: 15px; text-align: left; color: var(--text-sec); font-size: 0.8rem; border-bottom: 1px solid var(--border); }
+    td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    
+    /* === 视图2: 营销日历组件 (Grid布局 - 12个月) === */
+    .calendar-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+    }
+    .cal-month {
+        background: white; padding: 20px; border-radius: var(--radius);
+        box-shadow: var(--shadow-card); border: 1px solid transparent; transition: 0.3s;
+        display: flex; flex-direction: column;
+    }
+    .cal-month:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .cal-month h3 { margin: 0 0 10px 0; color: var(--primary-dark); font-size: 1.1rem; border-bottom: 1px solid #f0fdf4; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center;}
+    .cal-month ul { padding-left: 20px; margin: 0; color: var(--text-sec); font-size: 0.9rem; flex: 1;}
+    .cal-month li { margin-bottom: 6px; }
+    .cal-active { background: #ecfdf5; border: 1px solid var(--primary); }
+
+    /* === 视图3: 发货计划 (增强版卡片) === */
+    .shipment-card {
+        background: white; border-radius: 12px; box-shadow: var(--shadow-card);
+        margin-bottom: 20px; padding: 20px; border: 1px solid var(--border);
+        transition: 0.2s;
+    }
+    .shipment-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+    .shipment-header {
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 15px;
+    }
+    .sku-info { font-weight: bold; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .sku-badge { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--text-sec); font-weight: normal;}
+
+    /* 状态选择器美化 */
+    .status-select {
+        padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);
+        font-weight: bold; color: var(--text-main); cursor: pointer;
+        background-color: #f9fafb;
+    }
+    .status-select:focus { border-color: var(--primary); outline: 3px solid var(--primary-light); }
+
+    /* 日期输入网格 */
+    .date-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
+        margin-bottom: 15px;
+    }
+    .date-item { display: flex; flex-direction: column; gap: 5px; }
+    .date-label { font-size: 0.75rem; color: var(--text-sec); font-weight: 600; }
+    .date-input {
+        padding: 8px; border: 1px solid var(--border); border-radius: 6px;
+        font-size: 0.9rem; color: var(--text-main); width: 100%; transition: 0.2s;
+    }
+    .date-input:focus { border-color: var(--primary); background: #f0fdf4; }
+
+    /* 备注框 */
+    .remark-box {
+        width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;
+        resize: vertical; min-height: 60px; font-size: 0.9rem; background: #fafafa;
+    }
+    .remark-box:focus { border-color: var(--primary); background: white; }
+
+</style>
 </head>
 <body>
 
-    <div class="card sku-manager">
-        <div class="sku-manager-header">
-            <h3 style="margin:0; min-width: 120px;">🏷️ SKU 记忆</h3>
-            <div class="sku-inputs">
-                <input type="text" id="newSkuName" placeholder="SKU名称 (如: A001)" style="flex: 2;">
-                <input type="number" id="newSkuPrice" placeholder="单价" style="flex: 1;">
-                <input type="number" id="newSkuWeight" placeholder="单个重量" style="flex: 1;">
-            </div>
-            <button onclick="saveSKU()">保存SKU</button>
-            <span id="saveMsg" style="color: var(--accent-color); font-weight: 600; font-size: 14px;"></span>
-        </div>
+<aside>
+    <div class="brand">
+        <i class="fas fa-layer-group"></i>
+        <span>SupplyChain</span>
     </div>
+    <ul class="nav-menu">
+        <li class="nav-item active" onclick="switchTab('dashboard', this)">
+            <i class="fas fa-tachometer-alt"></i> 工作台
+        </li>
+        <li class="nav-item" onclick="switchTab('marketing', this)">
+            <i class="fas fa-calendar-alt"></i> 营销日历
+        </li>
+        <li class="nav-item" onclick="switchTab('shipments', this)">
+            <i class="fas fa-shipping-fast"></i> 发货计划
+        </li>
+        <li class="nav-item" onclick="switchTab('settings', this)">
+            <i class="fas fa-cog"></i> 系统设置
+        </li>
+    </ul>
+</aside>
 
-    <div class="container-grid">
-        <div class="main-content">
-            
-            <div class="card">
-                <h3>🧾 订单汇总表</h3>
-                <div class="table-container">
-                    <table id="mainTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 60px;">序号</th>
-                                <th style="text-align: left; padding-left: 20px;">名称/SKU (输入自动调用)</th>
-                                <th style="width: 100px;">单价</th>
-                                <th style="width: 100px;">数量</th>
-                                <th style="width: 110px;">重量 (单个)</th>
-                                <th style="width: 120px;">总价</th>
-                                <th style="width: 70px;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td colspan="2" style="text-align: right; padding-right: 20px;">汇总统计</td>
-                                <td id="totalAvgPrice">-</td>
-                                <td><input type="text" id="totalQty" value="0" readonly></td>
-                                <td><input type="text" id="totalWeight" value="0" readonly></td>
-                                <td><input type="text" id="grandTotal" value="0.00" readonly></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+<main>
+    <header>
+        <div class="page-title">
+            <h2 id="page-header-title">供应链协同看板</h2>
+            <p id="page-header-desc">Integrated Supply Chain & Marketing Console</p>
+        </div>
+        <button class="hero-date-btn">
+            <i class="far fa-clock"></i>
+            <span id="top-date">Loading...</span>
+        </button>
+    </header>
+
+    <div class="content-wrapper">
+
+        <div id="view-dashboard" class="view-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div style="color:#6b7280; font-size:0.8rem;"><i class="fas fa-globe-asia"></i> 北京 (CN)</div>
+                    <div class="stat-value" id="time-cn">--:--</div>
                 </div>
-                <button class="mt-20 w-full" onclick="addRow()">+ 添加一行</button>
+                <div class="stat-card">
+                    <div style="color:#6b7280; font-size:0.8rem;"><i class="fas fa-flag-usa"></i> 纽约 (US)</div>
+                    <div class="stat-value" id="time-us">--:--</div>
+                </div>
+                <div class="stat-card">
+                    <div style="color:#6b7280; font-size:0.8rem;"><i class="fas fa-landmark"></i> 伦敦 (UK)</div>
+                    <div class="stat-value" id="time-uk">--:--</div>
+                </div>
+                <div class="stat-card">
+                    <div style="color:#6b7280; font-size:0.8rem;"><i class="fas fa-euro-sign"></i> 巴黎 (EU)</div>
+                    <div class="stat-value" id="time-eu">--:--</div>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>📦 包装尺寸与体积重计算</h3>
-                <div class="table-container" style="box-shadow: none; border: 1px solid #e5e7eb;">
-                    <table class="package-calc-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: left;">项目</th>
-                                <th>长 (cm)</th>
-                                <th>宽 (cm)</th>
-                                <th>高 (cm)</th>
-                                <th>总个数</th>
-                                <th>单价</th>
-                                <th>总价</th>
-                                <th>总重量</th>
-                                <th>体积重</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align: left; font-weight: 600;">单个尺寸</td>
-                                <td><input type="number" id="pL" value="13" oninput="calcPackage()"></td>
-                                <td><input type="number" id="pW" value="10" oninput="calcPackage()"></td>
-                                <td><input type="number" id="pH" value="3" oninput="calcPackage()"></td>
-                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell highlight-result" id="pTotalCount">0</span></td>
-                                <td rowspan="4" style="vertical-align: middle;"><input type="number" id="pUnitPrice" placeholder="单价" oninput="calcPackage()"></td>
-                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell highlight-result" id="pTotalPrice">0.00</span></td>
-                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell" id="pRealWeight">0</span></td>
-                                <td rowspan="4" style="vertical-align: middle;"><span class="result-cell" id="pVolWeight">0</span></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left; font-weight: 600; color: var(--text-medium);">叠加数量 (输入)</td>
-                                <td><input type="number" id="qL" value="2" class="red-text-input" oninput="calcPackage()"></td>
-                                <td><input type="number" id="qW" value="3" class="red-text-input" oninput="calcPackage()"></td>
-                                <td><input type="number" id="qH" value="4" class="red-text-input" oninput="calcPackage()"></td>
-                            </tr>
-                            <tr style="background-color: #f8fafc;">
-                                <td style="text-align: left; font-weight: 600;">最终包装尺寸</td>
-                                <td><span class="result-cell" id="resL">0</span></td>
-                                <td><span class="result-cell" id="resW">0</span></td>
-                                <td><span class="result-cell" id="resH">0</span></td>
-                            </tr>
-                             <tr>
-                                <td style="text-align: left; font-weight: 600; color: var(--text-medium);">单个重量 (输入)</td>
-                                <td colspan="3" style="text-align: left;"><input type="number" id="pSingleWeight" value="0.028" class="red-text-input" style="width: 100px;" oninput="calcPackage()"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="filter-panel">
+                <div><label style="font-size:0.8rem; color:#666;">SKU搜索</label><br><input class="input-clean" placeholder="输入产品..."></div>
+                <div><label style="font-size:0.8rem; color:#666;">开始日期</label><br><input type="date" class="input-clean"></div>
+                <div><label style="font-size:0.8rem; color:#666;">结束日期</label><br><input type="date" class="input-clean"></div>
+                <div style="margin-left:auto;"><button style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">查询数据</button></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="80">图片</th>
+                            <th width="200">SKU信息</th>
+                            <th>进度节点</th>
+                            <th>供应商</th>
+                            <th>Listing状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div style="width:50px; height:50px; background:#eee; border-radius:4px;"></div></td>
+                            <td><strong>SKU-001</strong><br><span style="color:#888; font-size:0.8rem;">户外运动水壶</span></td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:5px; font-size:0.8rem;">
+                                    <span style="color:green;">● 下单</span> 
+                                    <span style="height:1px; width:20px; background:#ddd;"></span> 
+                                    <span style="color:orange;">● 生产</span>
+                                    <span style="height:1px; width:20px; background:#ddd;"></span> 
+                                    <span style="color:#ccc;">● 发货</span>
+                                </div>
+                            </td>
+                            <td>义乌市某某工贸</td>
+                            <td><span style="background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:4px; font-size:0.75rem;">已上架</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="sidebar">
-            <div class="card">
-                <h3>🛠️ 常用转换工具</h3>
-
-                <div class="converter-group">
-                    <span class="converter-header">📏 尺寸转换</span>
-                    <div class="conv-row">
-                        <input type="number" id="cmVal" oninput="convertLen('cm')" placeholder="厘米 (cm)">
-                        <span>⇋</span>
-                        <input type="number" id="inchVal" oninput="convertLen('inch')" placeholder="英寸 (inch)">
-                    </div>
-                     <div class="conv-row">
-                        <input type="number" id="ftVal" oninput="convertLen('ft')" placeholder="英尺 (ft)">
-                        <span>⇋</span>
-                        <input type="number" id="mVal" oninput="convertLen('m')" placeholder="米 (m)">
-                    </div>
-                </div>
-
-                <div class="converter-group">
-                    <span class="converter-header">⚖️ 重量转换</span>
-                    <div class="conv-row">
-                        <input type="number" id="lbVal" oninput="convertWeight('lb')" placeholder="磅 (lb)">
-                        <span>⇋</span>
-                        <input type="number" id="gVal" oninput="convertWeight('g')" placeholder="克 (g)">
-                    </div>
-                    <div class="conv-row">
-                        <input type="number" id="ozVal" oninput="convertWeight('oz')" placeholder="盎司 (oz)">
-                        <span>⇋</span>
-                        <input type="number" id="ozgVal" oninput="convertWeight('ozg')" placeholder="克 (g)">
-                    </div>
-                </div>
-
-                 <div class="converter-group">
-                    <span class="converter-header">💧 液体容量</span>
-                    <div class="conv-row">
-                        <input type="number" id="flozVal" oninput="convertLiquid('floz')" placeholder="液盎司 (fl oz)">
-                        <span>⇋</span>
-                        <input type="number" id="mlVal" oninput="convertLiquid('ml')" placeholder="毫升 (ml)">
-                    </div>
-                </div>
-
-                <div class="converter-group ratio-box">
-                    <span class="converter-header">➗ 简易除法 / 性价比</span>
-                    <div class="conv-row">
-                        <input type="number" id="calcPrice" placeholder="总价" oninput="calcRatio()" style="background: white;">
-                        <span style="color: var(--accent-color)">/</span>
-                        <input type="number" id="calcQty" placeholder="个数" oninput="calcRatio()" style="background: white;">
-                    </div>
-                    <div style="text-align: center; margin-top:10px; font-weight: bold; color: var(--accent-color);">
-                        结果(单价): <span id="calcResult" style="font-size: 1.4em;">0</span>
-                    </div>
-                </div>
-
+        <div id="view-marketing" class="view-section">
+            <div class="calendar-grid">
+                <div class="cal-month"><h3>1月 (Jan)</h3><ul><li>夏季产品筹备</li><li>毕业季选品</li><li>棒球赛季</li></ul></div>
+                <div class="cal-month cal-active"><h3>2月 (Feb) <span style="font-size:0.7rem; background:var(--primary); color:white; padding:2px 6px; border-radius:4px;">Current</span></h3><ul><li>阵亡将士纪念日筹备</li><li>婚礼季进行中</li><li>夏季产品最后阶段</li></ul></div>
+                <div class="cal-month"><h3>3月 (Mar)</h3><ul><li>秋季返校季筹备</li><li>棒球与垒球赛季</li><li>婚礼季高峰</li></ul></div>
+                <div class="cal-month"><h3>4月 (Apr)</h3><ul><li>排球赛季</li><li>秋季返校季</li><li>复活节营销</li></ul></div>
+                <div class="cal-month"><h3>5月 (May)</h3><ul><li>秋季产品筹备</li><li>橄榄球赛季筹备</li><li>母亲节</li></ul></div>
+                <div class="cal-month"><h3>6月 (Jun)</h3><ul><li>父亲节</li><li>橄榄球赛季</li><li>婚礼季</li></ul></div>
+                
+                <div class="cal-month"><h3>7月 (Jul)</h3><ul><li><strong style="color:#f59e0b">Prime Day 大促</strong></li><li>万圣节选品启动</li><li>返校季冲刺</li></ul></div>
+                <div class="cal-month"><h3>8月 (Aug)</h3><ul><li>圣诞节选品筹备</li><li>万圣节备货下单</li><li>秋季产品发货</li></ul></div>
+                <div class="cal-month"><h3>9月 (Sep)</h3><ul><li>万圣节产品发货</li><li>感恩节/黑五备货</li><li>橄榄球赛季高峰</li></ul></div>
+                <div class="cal-month"><h3>10月 (Oct)</h3><ul><li><strong style="color:#ea580c">万圣节 (31日)</strong></li><li>圣诞节发货截止</li><li>Q4 旺季开始</li></ul></div>
+                <div class="cal-month"><h3>11月 (Nov)</h3><ul><li><strong style="color:#ef4444">黑五网一 (BFCM)</strong></li><li>感恩节</li><li>冬季清仓计划</li></ul></div>
+                <div class="cal-month"><h3>12月 (Dec)</h3><ul><li><strong style="color:#16a34a">圣诞节</strong></li><li>新年元旦筹备</li><li>春季新品开发</li></ul></div>
             </div>
         </div>
-    </div>
 
-    <datalist id="skuList"></datalist>
+        <div id="view-shipments" class="view-section">
+            <div class="shipment-card">
+                <div class="shipment-header">
+                    <div class="sku-info">
+                        SKU-2024-XP01 
+                        <span class="sku-badge">户外防水背包</span>
+                    </div>
+                    <div>
+                        <select class="status-select">
+                            <option value="pending">待发货</option>
+                            <option value="transit" selected>运输中</option>
+                            <option value="received">已签收</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="date-grid">
+                    <div class="date-item">
+                        <span class="date-label">首批下单日期</span>
+                        <input type="date" class="date-input" value="2024-02-01">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">样品接收日期</span>
+                        <input type="date" class="date-input" value="2024-02-15">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">产品主图日期</span>
+                        <input type="date" class="date-input" value="2024-02-20">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">交货期 (工厂)</span>
+                        <input type="date" class="date-input" value="2024-03-10">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">Amazon发货日期</span>
+                        <input type="date" class="date-input" value="2024-03-15">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">到货期 (FBA)</span>
+                        <input type="date" class="date-input">
+                    </div>
+                </div>
 
-    <script>
-        // --- SKU 记忆功能 ---
-        function getSavedSKUs() {
-            const stored = localStorage.getItem('mySkuData');
-            return stored ? JSON.parse(stored) : {};
-        }
+                <div>
+                    <textarea class="remark-box" placeholder="在此输入发货备注 (例如: 物流单号, 货代联系方式, 特殊包装要求)..."></textarea>
+                </div>
+            </div>
 
-        function saveSKU() {
-            const name = document.getElementById('newSkuName').value.trim();
-            const price = document.getElementById('newSkuPrice').value;
-            const weight = document.getElementById('newSkuWeight').value;
+            <div class="shipment-card">
+                <div class="shipment-header">
+                    <div class="sku-info">
+                        SKU-2024-WB05 
+                        <span class="sku-badge">战术水壶</span>
+                    </div>
+                    <div>
+                        <select class="status-select">
+                            <option value="pending" selected>待发货</option>
+                            <option value="transit">运输中</option>
+                            <option value="received">已签收</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="date-grid">
+                    <div class="date-item">
+                        <span class="date-label">首批下单日期</span>
+                        <input type="date" class="date-input">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">样品接收日期</span>
+                        <input type="date" class="date-input">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">产品主图日期</span>
+                        <input type="date" class="date-input">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">交货期 (工厂)</span>
+                        <input type="date" class="date-input">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">Amazon发货日期</span>
+                        <input type="date" class="date-input">
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">到货期 (FBA)</span>
+                        <input type="date" class="date-input">
+                    </div>
+                </div>
 
-            if (!name) return alert('请输入SKU名称');
-
-            const skus = getSavedSKUs();
-            skus[name] = { price: price, weight: weight };
-            localStorage.setItem('mySkuData', JSON.stringify(skus));
-            
-            updateDatalist();
-            
-            const msg = document.getElementById('saveMsg');
-            msg.innerText = "✨ 已保存!";
-            setTimeout(() => msg.innerText = "", 2000);
-            
-            // 清空输入框
-            document.getElementById('newSkuName').value = '';
-            document.getElementById('newSkuPrice').value = '';
-            document.getElementById('newSkuWeight').value = '';
-        }
-
-        function updateDatalist() {
-            const skus = getSavedSKUs();
-            const datalist = document.getElementById('skuList');
-            datalist.innerHTML = '';
-            for (let name in skus) {
-                const opt = document.createElement('option');
-                opt.value = name;
-                datalist.appendChild(opt);
-            }
-        }
-
-        // --- 主表格逻辑 ---
-        function addRow() {
-            const tbody = document.getElementById('tableBody');
-            const rowCount = tbody.rows.length + 1;
-            const tr = document.createElement('tr');
-            
-            tr.innerHTML = `
-                <td>${rowCount}</td>
-                <td style="text-align: left;"><input type="text" list="skuList" onchange="fillSkuData(this)" placeholder="输入或选择SKU" style="text-align: left;"></td>
-                <td><input type="number" class="price" oninput="calcMainTable()" step="0.01" placeholder="0.00"></td>
-                <td><input type="number" class="qty" oninput="calcMainTable()" placeholder="0"></td>
-                <td><input type="number" class="weight" oninput="calcMainTable()" step="0.001" placeholder="0.000"></td>
-                <td><input type="text" class="total" value="0.00" readonly style="font-weight: bold; background: #f3f4f6; border:none;"></td>
-                <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
-            `;
-            tbody.appendChild(tr);
-            // 新行添加后自动聚焦到SKU输入框
-            tr.querySelector('input[list="skuList"]').focus();
-        }
-
-        function deleteRow(btn) {
-            btn.closest('tr').remove();
-            calcMainTable();
-            // 重置序号
-            const rows = document.getElementById('tableBody').rows;
-            for(let i=0; i<rows.length; i++) {
-                rows[i].cells[0].innerText = i + 1;
-            }
-        }
-
-        function fillSkuData(input) {
-            const name = input.value;
-            const skus = getSavedSKUs();
-            if (skus[name]) {
-                const row = input.closest('tr');
-                row.querySelector('.price').value = skus[name].price;
-                row.querySelector('.weight').value = skus[name].weight;
-                // 聚焦到数量输入框，方便接着输入
-                row.querySelector('.qty').focus();
-                calcMainTable();
-            }
-        }
-
-        function calcMainTable() {
-            const rows = document.querySelectorAll('#tableBody tr');
-            let sumTotal = 0;
-            let sumQty = 0;
-            let sumWeight = 0;
-
-            rows.forEach(row => {
-                const price = parseFloat(row.querySelector('.price').value) || 0;
-                const qty = parseFloat(row.querySelector('.qty').value) || 0;
-                const weight = parseFloat(row.querySelector('.weight').value) || 0;
-
-                const lineTotal = price * qty;
-                const lineWeight = weight * qty;
-
-                row.querySelector('.total').value = lineTotal.toFixed(2);
-
-                sumTotal += lineTotal;
-                sumQty += qty;
-                sumWeight += lineWeight;
-            });
-
-            document.getElementById('grandTotal').value = sumTotal.toFixed(2);
-            document.getElementById('totalQty').value = sumQty;
-            document.getElementById('totalWeight').value = sumWeight.toFixed(3);
-        }
-
-        // --- 包装计算逻辑 ---
-        function calcPackage() {
-            // 输入值
-            const L = parseFloat(document.getElementById('pL').value) || 0;
-            const W = parseFloat(document.getElementById('pW').value) || 0;
-            const H = parseFloat(document.getElementById('pH').value) || 0;
-            
-            const qL = parseFloat(document.getElementById('qL').value) || 1;
-            const qW = parseFloat(document.getElementById('qW').value) || 1;
-            const qH = parseFloat(document.getElementById('qH').value) || 1;
-
-            const singleWeight = parseFloat(document.getElementById('pSingleWeight').value) || 0;
-            const unitPrice = parseFloat(document.getElementById('pUnitPrice').value) || 0;
-
-            // 计算结果
-            const totalCount = qL * qW * qH;
-            const packL = L * qL;
-            const packW = W * qW;
-            const packH = H * qH;
-
-            // 体积重 (默认除以5000)
-            const volWeight = (packL * packW * packH) / 5000;
-            const realWeight = totalCount * singleWeight;
-            const totalPrice = totalCount * unitPrice;
-
-            // 更新DOM
-            document.getElementById('resL').innerText = packL.toFixed(1);
-            document.getElementById('resW').innerText = packW.toFixed(1);
-            document.getElementById('resH').innerText = packH.toFixed(1);
-            
-            document.getElementById('pTotalCount').innerText = totalCount;
-            document.getElementById('pVolWeight').innerText = volWeight.toFixed(2);
-            document.getElementById('pRealWeight').innerText = realWeight.toFixed(3);
-            document.getElementById('pTotalPrice').innerText = totalPrice.toFixed(2);
-        }
-
-        // --- 转换工具逻辑 ---
-        function convertLen(type) {
-            if (type === 'cm') {
-                let v = parseFloat(document.getElementById('cmVal').value);
-                document.getElementById('inchVal').value = (v / 2.54).toFixed(3);
-            } else if (type === 'inch') {
-                let v = parseFloat(document.getElementById('inchVal').value);
-                document.getElementById('cmVal').value = (v * 2.54).toFixed(3);
-            } else if (type === 'ft') {
-                let v = parseFloat(document.getElementById('ftVal').value);
-                document.getElementById('mVal').value = (v * 0.3048).toFixed(3);
-            } else if (type === 'm') {
-                let v = parseFloat(document.getElementById('mVal').value);
-                document.getElementById('ftVal').value = (v / 0.3048).toFixed(3);
-            }
-        }
-
-        function convertWeight(type) {
-            if (type === 'lb') {
-                let v = parseFloat(document.getElementById('lbVal').value);
-                document.getElementById('gVal').value = (v * 453.592).toFixed(1);
-            } else if (type === 'g') {
-                let v = parseFloat(document.getElementById('gVal').value);
-                document.getElementById('lbVal').value = (v / 453.592).toFixed(4);
-            } else if (type === 'oz') {
-                let v = parseFloat(document.getElementById('ozVal').value);
-                document.getElementById('ozgVal').value = (v * 28.3495).toFixed(2);
-            } else if (type === 'ozg') {
-                let v = parseFloat(document.getElementById('ozgVal').value);
-                document.getElementById('ozVal').value = (v / 28.3495).toFixed(4);
-            }
-        }
+                <div>
+                    <textarea class="remark-box" placeholder="在此输入发货备注..."></textarea>
+                </div>
+            </div>
+        </div>
         
-        function convertLiquid(type) {
-             if (type === 'floz') {
-                let v = parseFloat(document.getElementById('flozVal').value);
-                document.getElementById('mlVal').value = (v * 29.5735).toFixed(1);
-            } else if (type === 'ml') {
-                let v = parseFloat(document.getElementById('mlVal').value);
-                document.getElementById('flozVal').value = (v / 29.5735).toFixed(3);
-            }
-        }
+        <div id="view-settings" class="view-section">
+            <div style="background:white; padding:40px; border-radius:12px; text-align:center; color:#888;">
+                <i class="fas fa-cogs" style="font-size:3rem; margin-bottom:20px; color:#ddd;"></i>
+                <p>系统设置面板正在开发中...</p>
+            </div>
+        </div>
 
-        function calcRatio() {
-            const p = parseFloat(document.getElementById('calcPrice').value) || 0;
-            const q = parseFloat(document.getElementById('calcQty').value) || 1;
-            let res = p / q;
-            if (!isFinite(res) || isNaN(res)) res = 0;
-            document.getElementById('calcResult').innerText = res.toFixed(4);
-        }
+    </div>
+</main>
 
-        // 初始化
-        updateDatalist();
-        for(let i=0; i<3; i++) addRow(); // 默认添加3行
-        calcPackage(); // 初始计算一次包装
-    </script>
+<script>
+    function switchTab(viewName, clickedNav) {
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            item.style.background = "";
+            item.style.color = ""; 
+        });
+        clickedNav.classList.add('active');
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        const targetId = 'view-' + viewName;
+        document.getElementById(targetId).classList.add('active');
+
+        const headerTitle = document.getElementById('page-header-title');
+        if(viewName === 'dashboard') headerTitle.innerText = "供应链协同看板";
+        else if(viewName === 'marketing') headerTitle.innerText = "年度营销日历";
+        else if(viewName === 'shipments') headerTitle.innerText = "物流发货计划";
+        else if(viewName === 'settings') headerTitle.innerText = "系统设置";
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const fmt = (tz) => now.toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
+        document.getElementById('time-cn').innerText = fmt('Asia/Shanghai');
+        document.getElementById('time-us').innerText = fmt('America/New_York');
+        document.getElementById('time-uk').innerText = fmt('Europe/London');
+        document.getElementById('time-eu').innerText = fmt('Europe/Paris');
+        document.getElementById('top-date').innerText = now.toLocaleDateString('zh-CN');
+    }
+
+    window.onload = () => {
+        updateClock(); 
+        setInterval(updateClock, 1000);
+    };
+</script>
+
 </body>
 </html>
