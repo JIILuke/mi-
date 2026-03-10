@@ -10,7 +10,6 @@
    设计系统 — Apple / iOS 专业版（纯净背景）
    ==================================================================== */
 :root {
-  /* 品牌色 */
   --apple-blue:     #0071e3;
   --apple-blue-d:   #0058b3;
   --apple-green:    #34c759;
@@ -19,8 +18,6 @@
   --apple-orange:   #ff9f0a;
   --apple-purple:   #bf5af2;
   --apple-teal:     #30b0c7;
-
-  /* 灰阶（Apple 规范） */
   --gray1: #1c1c1e;
   --gray2: #3a3a3c;
   --gray3: #636366;
@@ -28,32 +25,20 @@
   --gray5: #c7c7cc;
   --gray6: #e5e5ea;
   --gray7: #f2f2f7;
-
-  /* 背景（纯净，对标上一版本） */
   --bg-app:    #f0f2f5;
   --bg-panel:  #ffffff;
-
-  /* 玻璃质感 */
   --glass-bg:     rgba(255,255,255,0.78);
   --glass-border: rgba(255,255,255,0.35);
   --glass-blur:   blur(24px) saturate(160%);
   --glass-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.08);
   --card-shadow:  0 1px 4px rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.06), 0 24px 56px rgba(0,0,0,0.04);
-
-  /* 动效 */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* 圆角 */
   --r-sm: 10px;
   --r-md: 16px;
   --r-lg: 22px;
   --r-xl: 28px;
-
-  /* 字体 */
   --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
           'Microsoft YaHei', 'SF Pro Display', 'Helvetica Neue', sans-serif;
-
-  /* 侧边栏宽度 */
   --sidebar-w: 220px;
 }
 
@@ -71,7 +56,7 @@ body {
 }
 
 /* ====================================================================
-   侧边栏（修复中文文字渲染）
+   侧边栏
    ==================================================================== */
 aside {
   width: var(--sidebar-w);
@@ -171,7 +156,7 @@ aside {
   letter-spacing: 0;
 }
 .nav-badge {
-  background: var();
+  background: var(--apple-red);
   color: white;
   font-size: 0.6rem;
   font-weight: 800;
@@ -181,7 +166,6 @@ aside {
   text-align: center;
 }
 
-/* 侧边栏底部 */
 .sidebar-footer {
   margin-top: auto;
   padding-top: 16px;
@@ -314,7 +298,6 @@ header {
 .stat-label { font-size: 0.72rem; color: var(--gray4); margin-top: 2px; letter-spacing: 0; }
 .stat-sub   { font-size: 0.68rem; color: var(--gray4); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 
-/* 统计概览 */
 .overview-bento {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -443,20 +426,118 @@ tr[data-row="product"].starred { border-left: 3px solid var(--apple-orange); }
 .ghost-sku  { font-weight: 800; font-size: 0.9rem; color: var(--gray1); }
 .ghost-id   { font-size: 0.75rem; color: var(--gray4); }
 
-/* 图片上传 */
+/* ====================================================================
+   图片上传区域（更新版）
+   ==================================================================== */
+.img-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .img-uploader {
   width: 64px; height: 64px; border-radius: 12px;
   background: var(--gray7); border: 1.5px dashed var(--gray5);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; overflow: hidden; position: relative;
+  cursor: zoom-in; overflow: hidden; position: relative;
   transition: all 0.25s var(--ease);
+  flex-shrink: 0;
 }
 .img-uploader:hover { border-color: var(--apple-green); background: rgba(52,199,89,0.06); transform: scale(1.04); }
 .img-uploader.paste-ready { border-color: var(--apple-green); background: rgba(52,199,89,0.1); box-shadow: 0 0 0 3px rgba(52,199,89,0.15); }
+.img-uploader.has-image { cursor: zoom-in; border-style: solid; border-color: var(--gray5); }
 .img-uploader img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.img-uploader img.loaded { display: block; }
 .img-hint { font-size: 0.62rem; color: var(--gray4); display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; line-height: 1.3; }
+.img-uploader.has-image .img-hint { display: none; }
 
-/* 计划网格 */
+.btn-img-upload {
+  background: var(--gray7);
+  border: 1.5px solid var(--gray6);
+  border-radius: 7px;
+  font-family: var(--font);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--gray3);
+  cursor: pointer;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s var(--ease);
+  white-space: nowrap;
+}
+.btn-img-upload:hover {
+  background: rgba(52,199,89,0.08);
+  border-color: rgba(52,199,89,0.35);
+  color: var(--apple-green-d);
+  transform: scale(1.03);
+}
+
+/* ====================================================================
+   图片灯箱
+   ==================================================================== */
+.lightbox-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s var(--ease);
+  cursor: zoom-out;
+}
+.lightbox-mask.open {
+  display: flex;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.lightbox-img-wrap {
+  position: relative;
+  max-width: 88vw;
+  max-height: 88vh;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  animation: lightboxIn 0.28s var(--ease);
+  cursor: default;
+}
+@keyframes lightboxIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.lightbox-img-wrap img {
+  display: block;
+  max-width: 88vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: var(--r-xl);
+}
+.lightbox-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  background: rgba(0,0,0,0.55);
+  border: none;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 1;
+}
+.lightbox-close:hover { background: rgba(255,59,48,0.7); }
+
+/* ====================================================================
+   计划网格
+   ==================================================================== */
 .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
 .plan-item { display: flex; flex-direction: column; gap: 2px; }
 .plan-label { font-size: 0.62rem; font-weight: 700; color: var(--gray4); letter-spacing: 0.04em; text-transform: uppercase; }
@@ -479,7 +560,6 @@ tr[data-row="product"].starred { border-left: 3px solid var(--apple-orange); }
 }
 .sf-select:focus { border-color: var(--apple-blue); box-shadow: 0 0 0 3px rgba(0,113,227,0.1); }
 
-/* 颜色状态 */
 .sel-ok    { border-color: rgba(52,199,89,0.5)   !important; color: #248a3d !important; background: rgba(52,199,89,0.08)   !important; }
 .sel-warn  { border-color: rgba(255,59,48,0.4)   !important; color: #c0392b !important; background: rgba(255,59,48,0.07)  !important; }
 .sel-muted { border-color: rgba(142,142,147,0.35) !important; color: #636366 !important; background: rgba(142,142,147,0.07)!important; }
@@ -609,7 +689,6 @@ tr[data-row="product"].starred { border-left: 3px solid var(--apple-orange); }
 .remark-box:focus { background: var(--bg-panel); border-color: var(--apple-blue); }
 .remark-box::placeholder { color: var(--gray5); }
 
-/* 物流面板 */
 .logistics-panel {
   background: rgba(52,199,89,0.03);
   border: 1px solid rgba(52,199,89,0.12);
@@ -625,7 +704,6 @@ tr[data-row="product"].starred { border-left: 3px solid var(--apple-orange); }
 .btn-del { background: var(--bg-panel); border: 1.5px solid rgba(255,59,48,0.2); color: var(--apple-red); border-radius: 9px; cursor: pointer; height: 34px; display: flex; align-items: center; justify-content: center; transition: all 0.2s var(--ease); font-size: 0.72rem; }
 .btn-del:hover { background: rgba(255,59,48,0.06); transform: scale(1.05); }
 
-/* 供应商面板 */
 .supplier-panel { background: rgba(0,0,0,0.018); border: 1px solid var(--gray6); border-radius: var(--r-sm); padding: 14px; margin-top: 14px; }
 .supplier-panel-title { font-size: 0.68rem; font-weight: 700; color: var(--gray3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 11px; display: flex; align-items: center; gap: 6px; }
 .supplier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -875,18 +953,14 @@ tr[data-row="product"].starred { border-left: 3px solid var(--apple-orange); }
    ==================================================================== */
 .search-highlight { background: rgba(255,204,0,0.35); border-radius: 3px; padding: 0 1px; }
 
-/* ====================================================================
-   悬浮操作
-   ==================================================================== */
-.hover-actions { display: none; gap: 4px; }
-tr[data-row="product"]:hover .hover-actions { display: flex; }
-
 /* 滚动条美化 */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gray5); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gray4); }
 
+/* 隐藏的文件输入 */
+.hidden-file-input { display: none !important; }
 </style>
 </head>
 
@@ -903,6 +977,17 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
   <button class="undo-btn" onclick="undoDelete()">撤销</button>
   <button style="background:none;border:none;color:var(--gray5);cursor:pointer;font-size:0.75rem;padding:0 4px;" onclick="clearUndo()">✕</button>
 </div>
+
+<!-- 图片灯箱 -->
+<div class="lightbox-mask" id="lightboxMask" onclick="closeLightbox(event)">
+  <div class="lightbox-img-wrap" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightboxDirect()"><i class="fas fa-xmark"></i></button>
+    <img id="lightboxImg" src="" alt="预览图片">
+  </div>
+</div>
+
+<!-- 隐藏的导入文件输入 -->
+<input type="file" id="importFileInput" accept=".json" class="hidden-file-input" onchange="handleImportFile(this)">
 
 <!-- ══════════════════════════════════
      侧边栏
@@ -941,9 +1026,17 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
     <div class="save-indicator" id="saveIndicator">
       <i class="fas fa-check-circle"></i> 已自动保存
     </div>
+    <div class="sidebar-footer-item" onclick="exportJSON()">
+      <i class="fas fa-file-export" style="width:16px;text-align:center;"></i>
+      <span>导出备份</span>
+    </div>
+    <div class="sidebar-footer-item" onclick="triggerImport()">
+      <i class="fas fa-file-import" style="width:16px;text-align:center;"></i>
+      <span>导入数据</span>
+    </div>
     <div class="sidebar-footer-item" onclick="exportCSV()">
       <i class="fas fa-download" style="width:16px;text-align:center;"></i>
-      <span>导出数据</span>
+      <span>导出 CSV</span>
     </div>
     <div class="sidebar-footer-item" onclick="showShortcuts()">
       <i class="fas fa-keyboard" style="width:16px;text-align:center;"></i>
@@ -1067,7 +1160,7 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
         <table>
           <thead>
             <tr>
-              <th width="72">图片</th>
+              <th width="88">图片</th>
               <th width="165">基础信息</th>
               <th width="300">计划与跟进</th>
               <th width="170">营销节点 / 借样</th>
@@ -1076,130 +1169,7 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
             </tr>
           </thead>
           <tbody id="productTbody">
-            <tr data-row="product" data-starred="no">
-              <td>
-                <div class="img-uploader" data-img-uploader>
-                  <img alt="preview">
-                  <div class="img-hint">
-                    <i class="fas fa-image" style="font-size:0.95rem;color:var(--gray5);"></i>
-                    <span>上传/粘贴</span>
-                  </div>
-                  <input type="file" accept="image/*" style="display:none;">
-                </div>
-              </td>
-              <td>
-                <input class="ghost-input ghost-sku sku-field" value="SKU-2024-XP01" placeholder="SKU">
-                <input class="ghost-input ghost-id id-field" value="ID: 882910" placeholder="ID码">
-                <input class="ghost-input name-field" value="户外防水运动背包" placeholder="产品名称">
-              </td>
-              <td>
-                <div class="plan-grid">
-                  <div class="plan-item">
-                    <span class="plan-label">计划下单</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display has-value" tabindex="0">2024年03月01日</div>
-                      <input type="hidden" class="apple-date-value plan-order" value="2024-03-01">
-                      <button class="apple-date-clear" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item">
-                    <span class="plan-label">首批下单</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display has-value" tabindex="0">2024年02月01日</div>
-                      <input type="hidden" class="apple-date-value plan-first-order" value="2024-02-01">
-                      <button class="apple-date-clear" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item">
-                    <span class="plan-label">样品接收</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display has-value" tabindex="0">2024年02月15日</div>
-                      <input type="hidden" class="apple-date-value plan-sample" value="2024-02-15">
-                      <button class="apple-date-clear" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item">
-                    <span class="plan-label">图片交付</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display has-value" tabindex="0">2024年02月20日</div>
-                      <input type="hidden" class="apple-date-value plan-img-delivery" value="2024-02-20">
-                      <button class="apple-date-clear" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item">
-                    <span class="plan-label">工厂交货</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display has-value" tabindex="0">2024年03月10日</div>
-                      <input type="hidden" class="apple-date-value plan-factory" value="2024-03-10">
-                      <button class="apple-date-clear" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item">
-                    <span class="plan-label">FBA到货</span>
-                    <div class="apple-date-wrapper" data-apple-date>
-                      <i class="fas fa-calendar-day apple-date-icon"></i>
-                      <div class="apple-date-display empty" tabindex="0">选择日期</div>
-                      <input type="hidden" class="apple-date-value plan-arrival" value="">
-                      <button class="apple-date-clear" style="display:none;" aria-label="清除">✕</button>
-                    </div>
-                  </div>
-                  <div class="plan-item span-2">
-                    <span class="plan-label">Listing 状态/链接</span>
-                    <input class="sf-text-input plan-listing" placeholder="如：已上架">
-                  </div>
-                  <div class="plan-item span-2">
-                    <span class="plan-label">Amazon 发货单号</span>
-                    <input class="sf-text-input plan-amz-text" placeholder="如：FBA17XXXXXXXX">
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div style="display:flex;flex-direction:column;gap:7px;">
-                  <select class="sf-select solar-select">
-                    <option value="">选择营销节点…</option>
-                    <option value="1">1月（新年/清仓）</option>
-                    <option value="2">2月（情人节/春季）</option>
-                    <option value="3" selected>3月（妇女节）</option>
-                    <option value="4">4月（复活节）</option>
-                    <option value="5">5月（母亲节）</option>
-                    <option value="6">6月（父亲节）</option>
-                    <option value="7">7月（Prime Day）</option>
-                    <option value="8">8月（返校季）</option>
-                    <option value="9">9月（秋季新品）</option>
-                    <option value="10">10月（万圣节/Q4）</option>
-                    <option value="11">11月（黑五/网一）</option>
-                    <option value="12">12月（圣诞节）</option>
-                  </select>
-                  <select class="sf-select sample-select" data-color-mode="sample">
-                    <option value="yes" selected>✔ 已借样拍摄</option>
-                    <option value="no">✘ 未借样</option>
-                  </select>
-                  <select class="sf-select onimg-select" data-color-mode="onimg">
-                    <option value="no" selected>✘ 未上图</option>
-                    <option value="yes">✔ 已上图</option>
-                  </select>
-                </div>
-              </td>
-              <td>
-                <textarea class="remark-area" placeholder="输入待跟进内容…">确认五点描述翻译；检查外包装标签…</textarea>
-              </td>
-              <td>
-                <div style="display:flex;flex-direction:column;gap:7px;">
-                  <input class="sf-text-input supplier-field" placeholder="主供应商（工厂/渠道）">
-                  <input class="sf-text-input alt-supplier-field" placeholder="备选供应商（工厂/渠道）">
-                  <textarea class="remark-area note-field" placeholder="备注（账期/起订量等）" style="height:44px;"></textarea>
-                  <div style="display:flex;justify-content:flex-end;gap:5px;">
-                    <button class="btn-row-star" onclick="toggleStarRow(this)" title="标记重要"><i class="fas fa-star"></i></button>
-                    <button class="btn-row-del" onclick="deleteProductRow(this)" title="删除此产品"><i class="fas fa-trash"></i></button>
-                  </div>
-                </div>
-              </td>
-            </tr>
+            <!-- rows inserted by JS -->
           </tbody>
         </table>
       </div>
@@ -1270,8 +1240,22 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
         </div>
         <div class="settings-row">
           <div>
-            <div class="settings-label">导出产品数据</div>
-            <div class="settings-desc">将全部产品信息导出为 CSV 文件</div>
+            <div class="settings-label">导出完整备份（JSON）</div>
+            <div class="settings-desc">包含图片的完整数据备份，可用于导入恢复</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="exportJSON()"><i class="fas fa-file-export"></i> 导出备份</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">导入备份数据</div>
+            <div class="settings-desc">从 JSON 备份文件恢复数据（将合并或覆盖现有数据）</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="triggerImport()"><i class="fas fa-file-import"></i> 导入数据</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">导出产品数据（CSV）</div>
+            <div class="settings-desc">将产品信息导出为 CSV 文件（不含图片）</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> 导出 CSV</button>
         </div>
@@ -1302,7 +1286,7 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
           <div>
             <div class="settings-label">版本</div>
           </div>
-          <span style="font-size:0.82rem;color:var(--gray4);letter-spacing:0;">V 4.0 Pro</span>
+          <span style="font-size:0.82rem;color:var(--gray4);letter-spacing:0;">V 4.1 Pro</span>
         </div>
         <div class="settings-row">
           <div>
@@ -1433,6 +1417,10 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
       <span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></span>
     </div>
     <div class="shortcut-item">
+      <span class="shortcut-desc">粘贴图片到悬停区</span>
+      <span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">V</kbd></span>
+    </div>
+    <div class="shortcut-item">
       <span class="shortcut-desc">切换至工作台</span>
       <span><kbd class="kbd">1</kbd></span>
     </div>
@@ -1459,9 +1447,10 @@ tr[data-row="product"]:hover .hover-actions { display: flex; }
 /* ============================================================
    常量与全局状态
    ============================================================ */
-const VERSION = '4.0';
-const LS_KEY  = 'scpro_v4_data';
-const LS_CFG  = 'scpro_v4_cfg';
+const VERSION  = '4.1';
+const LS_KEY   = 'scpro_v4_data';
+const LS_CFG   = 'scpro_v4_cfg';
+const LS_IMGS  = 'scpro_v4_images'; // separate key for base64 images (large)
 
 const CALENDAR_DATA = {
   1:  { cn:['新年目标','冬季清仓','春季备货'],           en:['New Year Resolution','Winter Clearance','Spring Prep'] },
@@ -1497,14 +1486,33 @@ function parseDate(s) { if (!s) return null; const d=new Date(s+'T00:00:00'); re
 function fmtISO(d) { const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
 function addDays(s, n) { const d=parseDate(s); if(!d) return ''; d.setDate(d.getDate()+(Number(n)||0)); return fmtISO(d); }
 function daysDiff(s) { const d=parseDate(s); if(!d) return null; return Math.round((d-today0())/86400000); }
-
 function fmtDateCN(s) {
   const d=parseDate(s); if(!d) return '';
   return `${d.getFullYear()}年${String(d.getMonth()+1).padStart(2,'0')}月${String(d.getDate()).padStart(2,'0')}日`;
 }
-function fmtDateLabel(s) {
-  return fmtDateCN(s);
+function fmtDateLabel(s) { return fmtDateCN(s); }
+
+/* ============================================================
+   图片存储（独立 localStorage key，避免占满主数据）
+   ============================================================ */
+function loadImagesStore() {
+  try { return JSON.parse(localStorage.getItem(LS_IMGS) || '{}'); } catch(e) { return {}; }
 }
+function saveImagesStore(store) {
+  try { localStorage.setItem(LS_IMGS, JSON.stringify(store)); } catch(e) {
+    console.warn('图片存储失败（可能超出配额）', e);
+    showToast('图片数据过大，部分图片未能保存', 'warning');
+  }
+}
+function getImgForSku(sku) {
+  return loadImagesStore()[sku] || '';
+}
+function setImgForSku(sku, base64) {
+  const store = loadImagesStore();
+  if (base64) store[sku] = base64; else delete store[sku];
+  saveImagesStore(store);
+}
+function deleteImgForSku(sku) { setImgForSku(sku, ''); }
 
 /* ============================================================
    Toast 通知
@@ -1525,6 +1533,26 @@ function showProgress() {
   const b = document.getElementById('progressBar');
   b.className = 'progress-bar loading';
   setTimeout(() => { b.className = 'progress-bar done'; setTimeout(()=>{ b.className='progress-bar'; }, 400); }, 600);
+}
+
+/* ============================================================
+   图片灯箱
+   ============================================================ */
+function openLightbox(src) {
+  const mask = document.getElementById('lightboxMask');
+  const img  = document.getElementById('lightboxImg');
+  img.src = src;
+  mask.classList.add('open');
+  mask.style.display = 'flex';
+}
+function closeLightbox(e) {
+  // Called when clicking the mask background
+  document.getElementById('lightboxMask').style.display = 'none';
+  document.getElementById('lightboxMask').classList.remove('open');
+}
+function closeLightboxDirect() {
+  document.getElementById('lightboxMask').style.display = 'none';
+  document.getElementById('lightboxMask').classList.remove('open');
 }
 
 /* ============================================================
@@ -1569,7 +1597,6 @@ function updateClock() {
 function updateOverview() {
   const rows = document.querySelectorAll('#productTbody tr[data-row="product"]');
   let alertCount = 0;
-
   rows.forEach(tr => {
     ['plan-first-order','plan-img-delivery','plan-arrival','plan-factory'].forEach(cls => {
       const v = tr.querySelector('.'+cls)?.value;
@@ -1578,11 +1605,9 @@ function updateOverview() {
       if (diff !== null && diff <= 0) alertCount++;
     });
   });
-
   const cards = document.querySelectorAll('#shipmentsContainer .shipment-card');
   let transitCount = 0;
   cards.forEach(c => { if (c.querySelector('.status-select')?.value === 'transit') transitCount++; });
-
   document.getElementById('ov-transit').textContent     = transitCount;
   document.getElementById('ov-transit-sub').textContent = `${cards.length} 个发货计划`;
   document.getElementById('ov-alert').textContent       = alertCount;
@@ -1607,7 +1632,6 @@ function applyFilters() {
   const node  = document.getElementById('filterNode').value;
   const smp   = document.getElementById('filterSample').value;
   const oimg  = document.getElementById('filterOnImg').value;
-
   let visCount = 0;
   document.querySelectorAll('#productTbody tr[data-row="product"]').forEach(tr => {
     const matchQ    = !q    || getRowSearchText(tr).includes(q);
@@ -1644,7 +1668,6 @@ function closeAddProduct() {
   ['apSku','apId','apName','apSolar','apRemark','apSupplier','apAltSupplier'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  // 重置日期picker
   const w = document.querySelector('#addProductMask [data-apple-date]');
   if (w) resetAppleDateWrapper(w);
 }
@@ -1689,7 +1712,10 @@ function submitAddProduct() {
   closeAddProduct();
 }
 
-function buildProductRowHTML({ sku='', id='', name='', plan='', solar='', remark='', supplier='', altSup='' }) {
+/* ============================================================
+   构建产品行 HTML
+   ============================================================ */
+function buildProductRowHTML({ sku='', id='', name='', plan='', solar='', remark='', supplier='', altSup='', imgSrc='' }) {
   const dateParts = [
     ['计划下单', 'plan-order',       plan, plan?fmtDateCN(plan):'选择日期', !!plan],
     ['首批下单', 'plan-first-order', '',   '选择日期', false],
@@ -1709,12 +1735,22 @@ function buildProductRowHTML({ sku='', id='', name='', plan='', solar='', remark
       </div>
     </div>`;
 
+  const hasImg = !!imgSrc;
   return `
     <td>
-      <div class="img-uploader" data-img-uploader>
-        <img alt="preview">
-        <div class="img-hint"><i class="fas fa-image" style="font-size:0.95rem;color:var(--gray5);"></i><span>上传/粘贴</span></div>
-        <input type="file" accept="image/*" style="display:none;">
+      <div class="img-cell-wrap">
+        <div class="img-uploader${hasImg?' has-image':''}" data-img-uploader data-sku="${esc(sku)}">
+          <img alt="preview" class="${hasImg?'loaded':''}" ${hasImg?`src="${imgSrc}"`:''}
+               style="${hasImg?'':'display:none;'}">
+          <div class="img-hint">
+            <i class="fas fa-image" style="font-size:0.95rem;color:var(--gray5);"></i>
+            <span>粘贴图片</span>
+          </div>
+          <input type="file" accept="image/*" class="hidden-file-input">
+        </div>
+        <button class="btn-img-upload" onclick="triggerRowImgUpload(this)">
+          <i class="fas fa-arrow-up-from-bracket"></i> 上传图片
+        </button>
       </div>
     </td>
     <td>
@@ -1761,23 +1797,36 @@ function buildProductRowHTML({ sku='', id='', name='', plan='', solar='', remark
     </td>`;
 }
 
+/* ============================================================
+   图片上传按钮触发
+   ============================================================ */
+function triggerRowImgUpload(btn) {
+  const wrap = btn.closest('.img-cell-wrap');
+  const fileInput = wrap.querySelector('input[type="file"]');
+  if (fileInput) fileInput.click();
+}
+
+/* ============================================================
+   删除产品
+   ============================================================ */
 function deleteProductRow(btn) {
   const tr = btn.closest('tr');
   const sku = tr.querySelector('.sku-field')?.value?.trim() || '该产品';
-  // 记录撤销数据
   const snapshot = {
     html: tr.innerHTML,
     starred: tr.getAttribute('data-starred'),
     sku,
+    imgSrc: tr.querySelector('.img-uploader img')?.src || '',
     index: Array.from(tr.parentElement.children).indexOf(tr),
   };
-  undoStack = [snapshot]; // 只保留最后一次
+  undoStack = [snapshot];
 
   tr.style.transition = 'opacity 0.3s, transform 0.3s';
   tr.style.opacity = '0';
   tr.style.transform = 'translateX(20px)';
   setTimeout(() => {
     tr.remove();
+    deleteImgForSku(sku);
     syncShipmentsFromProducts();
     checkReminders();
     updateOverview();
@@ -1820,10 +1869,17 @@ function undoDelete() {
   tr.setAttribute('data-row','product');
   tr.setAttribute('data-starred', snap.starred||'no');
   tr.innerHTML = snap.html;
-  // 插回原位置
   const children = Array.from(tbody.children);
   if (snap.index < children.length) tbody.insertBefore(tr, children[snap.index]);
   else tbody.appendChild(tr);
+
+  // Restore image
+  if (snap.imgSrc && snap.sku) {
+    setImgForSku(snap.sku, snap.imgSrc);
+    const img = tr.querySelector('.img-uploader img');
+    if (img) { img.src = snap.imgSrc; img.style.display='block'; img.classList.add('loaded'); tr.querySelector('.img-uploader').classList.add('has-image'); }
+  }
+
   bindRowBehaviors(tr);
   syncShipmentsFromProducts();
   checkReminders();
@@ -1842,7 +1898,6 @@ function bindRowBehaviors(tr) {
   bindAppleDatePickers(tr);
   bindSolarSelect(tr);
   bindProductRowChange(tr);
-  // 初始化星标状态
   if (tr.getAttribute('data-starred')==='yes') {
     tr.classList.add('starred');
     const starBtn = tr.querySelector('.btn-row-star');
@@ -1860,30 +1915,81 @@ function bindProductRowChange(scopeEl) {
 }
 
 /* ============================================================
-   图片上传 & Ctrl+V 粘贴
+   图片上传、粘贴、灯箱
    ============================================================ */
-function applyImageToUploader(u, file) {
+function applyImageToUploader(uploaderEl, file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const img = u.querySelector('img'), hint = u.querySelector('.img-hint');
+  const img  = uploaderEl.querySelector('img');
+  const hint = uploaderEl.querySelector('.img-hint');
   const reader = new FileReader();
-  reader.onload = e => { img.src = e.target.result; img.style.display='block'; if(hint)hint.style.display='none'; };
+  reader.onload = e => {
+    const src = e.target.result;
+    img.src = src;
+    img.style.display = 'block';
+    img.classList.add('loaded');
+    if (hint) hint.style.display = 'none';
+    uploaderEl.classList.add('has-image');
+    uploaderEl.style.cursor = 'zoom-in';
+
+    // Persist image by SKU
+    const tr = uploaderEl.closest('tr[data-row="product"]');
+    const sku = tr?.querySelector('.sku-field')?.value?.trim();
+    if (sku) setImgForSku(sku, src);
+    scheduleAutoSave();
+  };
   reader.readAsDataURL(file);
 }
+
 function bindImgUploaders(scope) {
   (scope||document).querySelectorAll('[data-img-uploader]').forEach(u => {
     if (u.__imgBound) return; u.__imgBound = true;
-    const input = u.querySelector('input[type="file"]');
-    u.addEventListener('click', () => input && input.click());
-    input.addEventListener('change', () => { if(input.files[0]) applyImageToUploader(u,input.files[0]); });
+    const fileInput = u.querySelector('input[type="file"]');
+
+    // Click: if has image → lightbox; else → do nothing (upload btn handles file open)
+    u.addEventListener('click', e => {
+      const img = u.querySelector('img');
+      if (u.classList.contains('has-image') && img && img.src) {
+        e.stopPropagation();
+        openLightbox(img.src);
+      }
+      // No image: hover for paste hint only
+    });
+
+    // File input change (triggered by upload button)
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) applyImageToUploader(u, fileInput.files[0]);
+        fileInput.value = ''; // reset so same file can be re-selected
+      });
+    }
+
+    // Hover for paste detection
     u.addEventListener('mouseenter', () => { u.classList.add('paste-ready'); u._pasteActive=true; });
     u.addEventListener('mouseleave', () => { u.classList.remove('paste-ready'); u._pasteActive=false; });
   });
 }
+
+// Global paste handler for image (Ctrl+V on hovered uploader)
 document.addEventListener('paste', e => {
   const u = document.querySelector('[data-img-uploader].paste-ready');
   if (!u) return;
   for (const item of (e.clipboardData?.items||[])) {
-    if (item.type.startsWith('image/')) { applyImageToUploader(u, item.getAsFile()); e.preventDefault(); break; }
+    if (item.type.startsWith('image/')) {
+      applyImageToUploader(u, item.getAsFile());
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
+// Close lightbox on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const mask = document.getElementById('lightboxMask');
+    if (mask && mask.style.display !== 'none') {
+      closeLightboxDirect();
+      return;
+    }
   }
 });
 
@@ -1935,26 +2041,16 @@ function setAppleDateValue(wrapper, hidden, dateStr) {
   if (hidden.classList.contains('log-ship')) recalcLogistics(hidden);
 }
 
-/* ── 将弹窗 portal 到 body，用 fixed 定位完全脱离表格 overflow 限制 ── */
 function positionPopover(pop, triggerEl) {
   const POP_W = 248, POP_H = 310, GAP = 6;
   const r = triggerEl.getBoundingClientRect();
   const vw = window.innerWidth, vh = window.innerHeight;
-
-  // 默认：弹窗左对齐触发元素，出现在下方
   let top  = r.bottom + GAP;
   let left = r.left;
-
-  // 若右侧溢出则右对齐
   if (left + POP_W > vw - 8) left = r.right - POP_W;
-  // 若左侧溢出则强制贴左边
   if (left < 8) left = 8;
-
-  // 若下方空间不足则显示在上方
   if (top + POP_H > vh - 8) top = r.top - POP_H - GAP;
-  // 若上方也不足则贴顶
   if (top < 8) top = 8;
-
   pop.style.top  = top  + 'px';
   pop.style.left = left + 'px';
 }
@@ -1965,25 +2061,19 @@ function buildCalendarPopover(wrapper, hidden) {
   let viewMode = 'days';
   const MONTHS_CN = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
   const WEEKS_CN  = ['日','一','二','三','四','五','六'];
-
-  // 触发元素（显示框）用于计算位置
   const triggerEl = wrapper.querySelector('.apple-date-display') || wrapper;
 
   function render() {
-    // 清除旧弹窗（可能在 body 上）
     document.querySelectorAll('.apple-picker-popover').forEach(p => p.remove());
-
-    // 创建弹窗并直接挂到 body —— 彻底脱离任何 overflow 限制
     const pop = document.createElement('div');
     pop.className = 'apple-picker-popover';
-    pop._wrapper = wrapper; // 标记归属，用于切换判断
+    pop._wrapper = wrapper;
     document.body.appendChild(pop);
     activePopover = pop;
 
     const yr = viewDate.getFullYear(), mo = viewDate.getMonth();
     const todayD = today0();
 
-    // 导航栏
     const nav = document.createElement('div'); nav.className = 'apple-picker-nav';
     const btnP = document.createElement('button'); btnP.type='button'; btnP.innerHTML='<i class="fas fa-chevron-left"></i>';
     btnP.onclick = e => { e.stopPropagation(); if(viewMode==='days')viewDate.setMonth(mo-1); else if(viewMode==='months')viewDate.setFullYear(yr-1); else viewDate.setFullYear(yr-12); render(); };
@@ -2017,7 +2107,6 @@ function buildCalendarPopover(wrapper, hidden) {
       const rem=42-firstDay-daysInMo;
       for(let i=1;i<=rem;i++){const el=document.createElement('div');el.className='apple-day other-month';el.textContent=i;grid.appendChild(el);}
       pop.appendChild(grid);
-
     } else if (viewMode==='months') {
       const grid=document.createElement('div'); grid.className='apple-ym-grid';
       MONTHS_CN.forEach((m,idx)=>{
@@ -2026,7 +2115,6 @@ function buildCalendarPopover(wrapper, hidden) {
         el.onclick=e=>{e.stopPropagation();viewDate.setMonth(idx);viewMode='days';render();};
         grid.appendChild(el);
       }); pop.appendChild(grid);
-
     } else {
       const startY=Math.floor(yr/12)*12;
       const scr=document.createElement('div'); scr.className='apple-ym-scroll';
@@ -2039,8 +2127,6 @@ function buildCalendarPopover(wrapper, hidden) {
       }
       scr.appendChild(grid); pop.appendChild(scr);
     }
-
-    // 用 fixed 坐标精确定位（在 body 上，不受任何滚动/overflow 影响）
     positionPopover(pop, triggerEl);
   }
   render();
@@ -2059,22 +2145,17 @@ function bindAppleDatePickers(scope) {
     const clearBtn = wrapper.querySelector('.apple-date-clear');
     if (!display||!hidden) return;
 
-    // 空状态占位文字 — 始终固定，不读取当前显示内容（防止已有日期值被误存为占位符）
     display.dataset.emptyText = display.classList.contains('readonly-auto') ? '自动计算' : '选择日期';
 
-    // 初始化已有值
     if (hidden.value) {
       display.textContent = fmtDateLabel(hidden.value);
       display.className = 'apple-date-display has-value';
       if (clearBtn) clearBtn.style.display = 'flex';
     }
-
-    // readonly 自动计算字段不可点击
     if (display.classList.contains('readonly-auto')) return;
 
     display.addEventListener('click', e => {
       e.stopPropagation();
-      // 用 _wrapper 标记判断当前弹窗是否属于本 wrapper
       if (activePopover && activePopover._wrapper === wrapper) {
         closeAllPopovers();
       } else {
@@ -2088,13 +2169,10 @@ function bindAppleDatePickers(scope) {
 
 document.addEventListener('click', e => {
   if (!activePopover) return;
-  // 点击弹窗内部 或 触发元素本身 → 不关闭
   if (e.target.closest('.apple-picker-popover')) return;
   if (e.target.closest('[data-apple-date]')) return;
   closeAllPopovers();
 });
-
-// 滚动时关闭弹窗（防止位置错位）
 window.addEventListener('scroll', () => { if(activePopover) closeAllPopovers(); }, true);
 
 /* ============================================================
@@ -2163,8 +2241,6 @@ function changeLang(lang) {
 /* ============================================================
    发货计划逻辑
    ============================================================ */
-function addDaysHelper(s, n) { return addDays(s, n); }
-
 function autoUpdateShipmentStatus(card) {
   const statusSel = card.querySelector('.status-select'); if (!statusSel) return;
   const today = today0();
@@ -2185,7 +2261,6 @@ function updateLogArrive(logRow, arrive) {
   const arriveHidden = logRow.querySelector('.log-arrive'); if (!arriveHidden) return;
   arriveHidden.value = arrive;
   const wrapper = logRow.querySelectorAll('[data-apple-date]');
-  // 第3个wrapper是到货日期
   wrapper.forEach(w => {
     const h = w.querySelector('.log-arrive');
     if (h) {
@@ -2379,11 +2454,6 @@ function buildShipmentCardHTML(sku, name) {
    折叠/展开发货卡片
    ============================================================ */
 function toggleCard(headerEl) {
-  // 点击到 select 或 button 不触发折叠
-  if (event.target.tagName === 'SELECT' || event.target.closest('button.collapse-btn')) return;
-  if (!event.target.closest('.collapse-btn') && event.target.tagName !== 'BUTTON') {
-    // 只有点击到标题区域才折叠
-  }
   const card = headerEl.closest('.shipment-card');
   card.classList.toggle('collapsed');
 }
@@ -2416,7 +2486,6 @@ function syncShipmentsFromProducts() {
   const existing  = Array.from(container.querySelectorAll('.shipment-card'));
   const existSkus = new Set(existing.map(c => c.getAttribute('data-shipment')));
 
-  // 新增卡片
   products.forEach(p => {
     if (!existSkus.has(p.sku)) {
       container.insertAdjacentHTML('beforeend', buildShipmentCardHTML(p.sku, p.name));
@@ -2426,17 +2495,14 @@ function syncShipmentsFromProducts() {
     }
   });
 
-  // 删除孤立卡片
   existing.forEach(card => {
     if (!products.some(p => p.sku === card.getAttribute('data-shipment'))) card.remove();
   });
 
-  // 初始化新卡片
   container.querySelectorAll('.shipment-card').forEach(card => {
     if (!card.__inited) {
       card.__inited = true;
       bindAppleDatePickers(card);
-      // 绑定状态select
       const statusSel = card.querySelector('.status-select');
       if (statusSel && !statusSel.__bound) { statusSel.__bound=true; statusSel.addEventListener('change',()=>{applyStatusStyle(statusSel);updateOverview();scheduleAutoSave();}); }
       const logDays = card.querySelector('.log-days'); if (logDays) recalcLogistics(logDays);
@@ -2444,7 +2510,6 @@ function syncShipmentsFromProducts() {
     autoUpdateShipmentStatus(card);
   });
 
-  // 同步产品日期到发货卡片（只在空时填充）
   products.forEach(p => {
     const card = container.querySelector(`.shipment-card[data-shipment="${CSS.escape(p.sku)}"]`);
     if (!card) return;
@@ -2458,10 +2523,9 @@ function syncShipmentsFromProducts() {
     autoUpdateShipmentStatus(card);
   });
 
-  // 更新导航角标
   const transit = container.querySelectorAll('.status-select').length;
   const badge = document.getElementById('shipBadge');
-  if (transit > 0) { badge.style.display='inline-block'; badge.textContent=transit; } else { badge.style.display='none'; }
+  if (transit > 0) { badge.style.display='none'; badge.textContent=transit; } else { badge.style.display='none'; }
 
   updateOverview();
 }
@@ -2502,15 +2566,13 @@ function resetShipSearch() {
 }
 
 /* ============================================================
-   提醒中心（多层级：逾期 / 今日 / 7天预警）
+   提醒中心
    ============================================================ */
 function checkReminders(forceOpen=false) {
   const products = getProductsSnapshot();
   const listEl   = document.getElementById('notify-list');
   const countEl  = document.getElementById('notify-count');
-
   const overdue = [], todayArr = [], soonArr = [];
-
   const DATE_CHECKS = [
     { cls:'plan-first-order', label:'首批下单日' },
     { cls:'plan-img-delivery',label:'主图交付日' },
@@ -2518,22 +2580,19 @@ function checkReminders(forceOpen=false) {
     { cls:'plan-factory',     label:'工厂交货日' },
     { cls:'plan-sample',      label:'样品接收日' },
   ];
-
   products.forEach(p => {
     DATE_CHECKS.forEach(({ cls, label }) => {
       const v = p.tr.querySelector('.'+cls)?.value; if (!v) return;
       const diff = daysDiff(v);
       if (diff === null) return;
       const item = { sku: p.sku, label, date: v, diff };
-      if (diff < 0)                   overdue.push(item);
-      else if (diff === 0)            todayArr.push(item);
-      else if (diff <= warnDays)      soonArr.push(item);
+      if (diff < 0) overdue.push(item);
+      else if (diff === 0) todayArr.push(item);
+      else if (diff <= warnDays) soonArr.push(item);
     });
   });
-
   const total = overdue.length + todayArr.length + soonArr.length;
   countEl.textContent = total;
-
   listEl.innerHTML = '';
   if (!total) { listEl.innerHTML = '<div class="empty-notify">暂无提醒事项 ✓</div>'; return; }
 
@@ -2551,7 +2610,6 @@ function checkReminders(forceOpen=false) {
       listEl.appendChild(div);
     });
   }
-
   addSection('🔴 逾期', overdue, 'overdue');
   addSection('🟡 今日节点', todayArr, 'today');
   addSection('🔵 即将到期', soonArr, 'soon');
@@ -2575,13 +2633,13 @@ function toggleNotify() {
    数据持久化 (localStorage)
    ============================================================ */
 function serializeProductRow(tr) {
-  const get = cls => tr.querySelector('.'+cls)?.value || '';
-  const getHidden = cls => tr.querySelector('.'+cls+'[type="hidden"], input[type="hidden"].'+cls)?.value || '';
+  const get  = cls => tr.querySelector('.'+cls)?.value || '';
+  const getH = cls => tr.querySelector('input[type="hidden"].'+cls)?.value || tr.querySelector('.'+cls+'[type="hidden"]')?.value || '';
   return {
-    sku:     get('sku-field'),
-    id:      get('id-field').replace(/^ID: /,''),
-    name:    get('name-field'),
-    starred: tr.getAttribute('data-starred')||'no',
+    sku:          get('sku-field'),
+    id:           get('id-field').replace(/^ID: /,''),
+    name:         get('name-field'),
+    starred:      tr.getAttribute('data-starred')||'no',
     planOrder:    tr.querySelector('.plan-order')?.value || '',
     firstOrder:   tr.querySelector('.plan-first-order')?.value || '',
     sample:       tr.querySelector('.plan-sample')?.value || '',
@@ -2608,18 +2666,18 @@ function serializeShipCard(card) {
     days:   row.querySelector('.log-days')?.value || '0',
   }));
   return {
-    sku:       card.getAttribute('data-shipment'),
-    status:    card.querySelector('.status-select')?.value || 'pending',
-    firstOrder:getDate('ship-firstOrder'),
-    sample:    getDate('ship-sample'),
-    mainImg:   getDate('ship-mainImg'),
-    factory:   getDate('ship-factory'),
-    amzDate:   getDate('ship-amzDate'),
-    fba:       getDate('fbaArrival'),
-    amzText:   get('ship-amzText'),
-    remark:    card.querySelector('.ship-remark')?.value || '',
-    phone:     get('ship-supplier-phone'),
-    link1688:  get('ship-supplier-1688'),
+    sku:          card.getAttribute('data-shipment'),
+    status:       card.querySelector('.status-select')?.value || 'pending',
+    firstOrder:   getDate('ship-firstOrder'),
+    sample:       getDate('ship-sample'),
+    mainImg:      getDate('ship-mainImg'),
+    factory:      getDate('ship-factory'),
+    amzDate:      getDate('ship-amzDate'),
+    fba:          getDate('fbaArrival'),
+    amzText:      get('ship-amzText'),
+    remark:       card.querySelector('.ship-remark')?.value || '',
+    phone:        get('ship-supplier-phone'),
+    link1688:     get('ship-supplier-1688'),
     firstContact: getDate('ship-first-contact'),
     logRows,
   };
@@ -2627,7 +2685,7 @@ function serializeShipCard(card) {
 
 function saveData() {
   if (!autoSaveEnabled) return;
-  const products = Array.from(document.querySelectorAll('#productTbody tr[data-row="product"]'))
+  const products  = Array.from(document.querySelectorAll('#productTbody tr[data-row="product"]'))
     .map(tr => serializeProductRow(tr));
   const shipCards = Array.from(document.querySelectorAll('#shipmentsContainer .shipment-card'))
     .map(card => serializeShipCard(card));
@@ -2642,26 +2700,27 @@ function saveData() {
 function loadData() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return;
+    if (!raw) return false;
     const data = JSON.parse(raw);
-    if (!data.products) return;
+    if (!data.products) return false;
 
-    // 清空现有行（保留第一条示例？不，全清再还原）
     const tbody = document.getElementById('productTbody');
     tbody.innerHTML = '';
+    const imgStore = loadImagesStore();
 
     data.products.forEach(p => {
+      const imgSrc = imgStore[p.sku] || '';
       const tr = document.createElement('tr');
       tr.setAttribute('data-row','product');
       tr.setAttribute('data-starred', p.starred||'no');
       tr.innerHTML = buildProductRowHTML({
         sku: p.sku, id: p.id, name: p.name,
         plan: p.planOrder, solar: p.solar, remark: p.remark,
-        supplier: p.supplier, altSup: p.altSupplier,
+        supplier: p.supplier, altSup: p.altSupplier, imgSrc,
       });
       tbody.appendChild(tr);
 
-      // 回填其他日期
+      // Backfill dates
       const dateMap = {
         'plan-order':       p.planOrder,
         'plan-first-order': p.firstOrder,
@@ -2676,11 +2735,16 @@ function loadData() {
         if (h) {
           h.value = val;
           const w = h.closest('[data-apple-date]');
-          if (w) { const d=w.querySelector('.apple-date-display'); const c=w.querySelector('.apple-date-clear'); if(d){d.textContent=fmtDateLabel(val);d.className='apple-date-display has-value';} if(c)c.style.display='flex'; }
+          if (w) {
+            const d=w.querySelector('.apple-date-display');
+            const c=w.querySelector('.apple-date-clear');
+            if(d){d.textContent=fmtDateLabel(val);d.className='apple-date-display has-value';}
+            if(c)c.style.display='flex';
+          }
         }
       });
 
-      // 回填文本
+      // Text fields
       const lf = tr.querySelector('.plan-listing'); if (lf) lf.value = p.listing||'';
       const at = tr.querySelector('.plan-amz-text'); if (at) at.value = p.amzText||'';
       const sf = tr.querySelector('.solar-select'); if (sf) sf.value = p.solar||'';
@@ -2692,14 +2756,12 @@ function loadData() {
       bindRowBehaviors(tr);
     });
 
-    // 发货卡片数据在 syncShipmentsFromProducts 后回填
     if (data.shipCards) {
       window.__pendingShipData = {};
       data.shipCards.forEach(s => { window.__pendingShipData[s.sku] = s; });
     }
-
-    showToast('已载入本地数据', 'info', 2000);
-  } catch(e) { console.warn('数据载入失败', e); }
+    return true;
+  } catch(e) { console.warn('数据载入失败', e); return false; }
 }
 
 function restoreShipCardData() {
@@ -2709,13 +2771,11 @@ function restoreShipCardData() {
     const sku = card.getAttribute('data-shipment');
     const s = pending[sku]; if (!s) return;
 
-    // 状态
     const sel = card.querySelector('.status-select'); if (sel) { sel.value=s.status||'pending'; applyStatusStyle(sel); }
-    // 文字
-    const texts = [['ship-amzText',s.amzText],['ship-remark',s.remark],['ship-supplier-phone',s.phone],['ship-supplier-1688',s.link1688]];
-    texts.forEach(([cls,val]) => { const el=card.querySelector('.'+cls)||card.querySelector(`input[class*="${cls}"],textarea[class*="${cls}"]`); if(el&&val) el.value=val; });
+    const texts = [['ship-amzText',s.amzText],['ship-supplier-phone',s.phone],['ship-supplier-1688',s.link1688]];
+    texts.forEach(([cls,val]) => { const el=card.querySelector('.'+cls); if(el&&val) el.value=val; });
+    const rem = card.querySelector('.ship-remark'); if (rem && s.remark) rem.value = s.remark;
 
-    // 日期
     const dateMap2 = {'ship-firstOrder':s.firstOrder,'ship-sample':s.sample,'ship-mainImg':s.mainImg,'ship-factory':s.factory,'ship-amzDate':s.amzDate,'fbaArrival':s.fba,'ship-first-contact':s.firstContact};
     Object.entries(dateMap2).forEach(([cls,val]) => {
       if (!val) return;
@@ -2723,9 +2783,7 @@ function restoreShipCardData() {
       if (h) { h.value=val; const w=h.closest('[data-apple-date]'); if(w){const d=w.querySelector('.apple-date-display');const c=w.querySelector('.apple-date-clear');if(d){d.textContent=fmtDateLabel(val);d.className='apple-date-display has-value';}if(c)c.style.display='flex';} }
     });
 
-    // 物流行
     if (s.logRows?.length > 1) {
-      const rowsContainer = card.querySelector('[data-rows]');
       for (let i = 1; i < s.logRows.length; i++) {
         const addBtn = card.querySelector('.btn[onclick*="addLogisticsRow"]');
         if (addBtn) addLogisticsRow(addBtn);
@@ -2740,7 +2798,6 @@ function restoreShipCardData() {
       });
       const firstDays = card.querySelector('.log-days'); if(firstDays) recalcLogistics(firstDays);
     }
-
     autoUpdateShipmentStatus(card);
   });
   window.__pendingShipData = null;
@@ -2753,11 +2810,7 @@ function scheduleAutoSave() {
 
 function saveSettings() {
   try {
-    localStorage.setItem(LS_CFG, JSON.stringify({
-      lang: currentLang,
-      autoSave: autoSaveEnabled,
-      warnDays,
-    }));
+    localStorage.setItem(LS_CFG, JSON.stringify({ lang: currentLang, autoSave: autoSaveEnabled, warnDays }));
   } catch(e) {}
 }
 function loadSettings() {
@@ -2779,9 +2832,141 @@ function toggleAutoSave(btn) {
 }
 
 function clearAllData() {
-  if (!confirm('确定要清空所有本地数据吗？\n此操作无法撤销，包括所有产品记录和发货计划。')) return;
-  try { localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_CFG); } catch(e) {}
+  if (!confirm('确定要清空所有本地数据吗？\n此操作无法撤销，包括所有产品记录、图片和发货计划。')) return;
+  try {
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_CFG);
+    localStorage.removeItem(LS_IMGS);
+  } catch(e) {}
   location.reload();
+}
+
+/* ============================================================
+   导出 JSON 备份（含图片 base64）
+   ============================================================ */
+function exportJSON() {
+  const products  = Array.from(document.querySelectorAll('#productTbody tr[data-row="product"]'))
+    .map(tr => serializeProductRow(tr));
+  const shipCards = Array.from(document.querySelectorAll('#shipmentsContainer .shipment-card'))
+    .map(card => serializeShipCard(card));
+  const images = loadImagesStore();
+  const cfg = { lang: currentLang, autoSave: autoSaveEnabled, warnDays };
+
+  const backup = {
+    version: VERSION,
+    exportedAt: new Date().toISOString(),
+    appName: '跨境供应链控制台 Pro',
+    products,
+    shipCards,
+    images,
+    cfg,
+  };
+
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `供应链备份_${fmtISO(new Date())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`备份已导出（${products.length} 个产品）`, 'success');
+}
+
+/* ============================================================
+   导入 JSON 备份
+   ============================================================ */
+function triggerImport() {
+  document.getElementById('importFileInput').click();
+}
+
+function handleImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.products || !Array.isArray(data.products)) {
+        showToast('文件格式错误，无法导入', 'error'); return;
+      }
+
+      const mode = confirm(
+        `检测到备份文件（${data.exportedAt ? new Date(data.exportedAt).toLocaleString() : '未知时间'}）\n` +
+        `包含 ${data.products.length} 个产品记录。\n\n` +
+        `点击【确定】= 覆盖现有数据\n点击【取消】= 合并到现有数据`
+      );
+
+      if (mode) {
+        // Overwrite mode
+        importData(data, 'overwrite');
+      } else {
+        // Merge mode
+        importData(data, 'merge');
+      }
+    } catch(err) {
+      showToast('导入失败：' + err.message, 'error');
+    }
+    input.value = ''; // reset
+  };
+  reader.readAsText(file);
+}
+
+function importData(data, mode) {
+  showProgress();
+
+  // 1. Restore images
+  if (data.images) {
+    if (mode === 'overwrite') {
+      saveImagesStore(data.images);
+    } else {
+      const existing = loadImagesStore();
+      Object.assign(existing, data.images);
+      saveImagesStore(existing);
+    }
+  }
+
+  // 2. Save main data to localStorage
+  if (mode === 'overwrite') {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      products: data.products,
+      shipCards: data.shipCards || [],
+      v: data.version || VERSION,
+    }));
+  } else {
+    // Merge: add non-duplicate SKUs
+    let existing = {};
+    try { existing = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) {}
+    const existSkus = new Set((existing.products || []).map(p => norm(p.sku)));
+    const newProducts = (data.products || []).filter(p => !existSkus.has(norm(p.sku)));
+    const merged = {
+      products: [...(existing.products || []), ...newProducts],
+      shipCards: [...(existing.shipCards || []), ...(data.shipCards || []).filter(s => !(existing.shipCards||[]).some(e => e.sku === s.sku))],
+      v: VERSION,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(merged));
+  }
+
+  // 3. Restore settings if overwriting
+  if (mode === 'overwrite' && data.cfg) {
+    localStorage.setItem(LS_CFG, JSON.stringify(data.cfg));
+  }
+
+  // 4. Reload UI
+  const tbody = document.getElementById('productTbody');
+  tbody.innerHTML = '';
+  document.getElementById('shipmentsContainer').innerHTML = '';
+
+  const loaded = loadData();
+  if (loaded) {
+    syncShipmentsFromProducts();
+    setTimeout(() => {
+      restoreShipCardData();
+      checkReminders();
+      updateOverview();
+    }, 200);
+    const modeLabel = mode === 'overwrite' ? '覆盖导入' : '合并导入';
+    showToast(`${modeLabel}成功（${data.products.length} 个产品）`, 'success');
+  }
 }
 
 /* ============================================================
@@ -2796,7 +2981,7 @@ function exportCSV() {
 
   const csvRows = [headers.join(',')];
   rows.forEach(tr => {
-    const g = cls => (tr.querySelector('.'+cls)?.value || '').replace(/,/g,' ');
+    const g  = cls => (tr.querySelector('.'+cls)?.value || '').replace(/,/g,' ');
     const gH = cls => (tr.querySelector('.'+cls)?.value || '').replace(/,/g,' ');
     const row = [
       g('sku-field'),
@@ -2821,10 +3006,10 @@ function exportCSV() {
     csvRows.push(row.join(','));
   });
 
-  const csvContent = '\uFEFF' + csvRows.join('\n'); // BOM for Excel
+  const csvContent = '\uFEFF' + csvRows.join('\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url;
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href=url;
   a.download = `供应链数据_${fmtISO(new Date())}.csv`;
   a.click(); URL.revokeObjectURL(url);
   showToast(`已导出 ${rows.length} 条产品数据`, 'success');
@@ -2840,12 +3025,13 @@ function hideShortcuts(e) { if(!e||e.target===document.getElementById('shortcutO
    键盘快捷键
    ============================================================ */
 document.addEventListener('keydown', e => {
-  const tag = document.activeElement.tagName;
+  const tag     = document.activeElement.tagName;
   const editing = tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT';
-  const modal = document.getElementById('addProductMask').style.display==='flex';
+  const modal   = document.getElementById('addProductMask').style.display==='flex';
   const shortcutOpen = document.getElementById('shortcutOverlay').style.display==='flex';
 
   if (e.key==='Escape') {
+    // Lightbox handled separately above
     if (shortcutOpen) { hideShortcuts(null); return; }
     if (modal) { closeAddProduct(); return; }
     closeAllPopovers();
@@ -2875,7 +3061,49 @@ document.addEventListener('keydown', e => {
 window.onload = function() {
   showProgress();
   loadSettings();
-  loadData();
+
+  const hasData = loadData();
+  if (!hasData) {
+    // Insert the default demo row when no saved data
+    const tbody = document.getElementById('productTbody');
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-row','product');
+    tr.setAttribute('data-starred','no');
+    tr.innerHTML = buildProductRowHTML({
+      sku: 'SKU-2024-XP01',
+      id: '882910',
+      name: '户外防水运动背包',
+      plan: '2024-03-01',
+      solar: '3',
+      remark: '确认五点描述翻译；检查外包装标签…',
+    });
+    tbody.appendChild(tr);
+    // Backfill demo dates
+    const demoDateMap = {
+      'plan-order':       '2024-03-01',
+      'plan-first-order': '2024-02-01',
+      'plan-sample':      '2024-02-15',
+      'plan-img-delivery':'2024-02-20',
+      'plan-factory':     '2024-03-10',
+    };
+    Object.entries(demoDateMap).forEach(([cls, val]) => {
+      const h = tr.querySelector('.'+cls);
+      if (h) {
+        h.value = val;
+        const w = h.closest('[data-apple-date]');
+        if (w) {
+          const d=w.querySelector('.apple-date-display');
+          const c=w.querySelector('.apple-date-clear');
+          if(d){d.textContent=fmtDateLabel(val);d.className='apple-date-display has-value';}
+          if(c)c.style.display='flex';
+        }
+      }
+    });
+    const ss = tr.querySelector('.sample-select'); if (ss) ss.value = 'yes';
+    bindRowBehaviors(tr);
+  } else {
+    showToast('已载入本地数据', 'info', 2000);
+  }
 
   updateClock();
   setInterval(updateClock, 1000);
@@ -2883,24 +3111,21 @@ window.onload = function() {
 
   renderCalendar();
 
-  // 绑定初始行为
-  document.querySelectorAll('#productTbody tr[data-row="product"]').forEach(tr => bindRowBehaviors(tr));
-
-  // 绑定工具栏事件
+  // Bind toolbar events
   document.getElementById('btnSkuSearch').addEventListener('click', applyFilters);
   document.getElementById('skuSearchInput').addEventListener('keydown', e => { if(e.key==='Enter') applyFilters(); });
   document.getElementById('btnReset').addEventListener('click', resetAll);
   document.getElementById('btnOpenAddProduct').addEventListener('click', openAddProduct);
   document.getElementById('addProductMask').addEventListener('click', e => { if(e.target.id==='addProductMask') closeAddProduct(); });
 
-  // 绑定弹窗内日期选择器
+  // Bind date pickers in modal
   bindAppleDatePickers(document);
 
-  // 发货计划同步
+  // Sync shipments
   syncShipmentsFromProducts();
   setTimeout(() => { restoreShipCardData(); checkReminders(); updateOverview(); }, 200);
 
-  // 自动保存心跳
+  // Auto-save heartbeat
   setInterval(() => { if(autoSaveEnabled) saveData(); }, 5000);
 };
 </script>
